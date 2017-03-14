@@ -17,7 +17,8 @@
         </activity>
         <activity android:name=".GLOneActivity" />
         <activity android:name=".GLTwoActivity" />
-        <activity android:name=".HelloTriangleActivity"></activity>
+        <activity android:name=".HelloTriangleActivity" />
+        <activity android:name=".HelloRectActivity"></activity>
     </application>
 
 </manifest>
