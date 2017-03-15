@@ -28,6 +28,7 @@ public class TextureRenderer implements GLSurfaceView.Renderer {
     private FloatBuffer vertexBuffer;
     private IntBuffer indexBuffer;
     private Context mContext;
+    private float mix = 0.2f;
     private final float[] vertexes = {
             // Positions         Colors     Texture Coordinates
             0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,    // top right
@@ -84,6 +85,8 @@ public class TextureRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture2);
         GLES30.glUniform1i(GLES30.glGetUniformLocation(program, "outTexture2"), 1);
 
+        GLES30.glUniform1f(GLES30.glGetUniformLocation(program, "mix"), mix);
+
         GLES30.glBindVertexArray(VAO);
         GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_INT, 0);
         GLES30.glBindVertexArray(0);
@@ -126,5 +129,9 @@ public class TextureRenderer implements GLSurfaceView.Renderer {
         // texture
         texture = GLUtil.bindTexture2D(mContext, R.raw.container);
         texture2 = GLUtil.bindTexture2D(mContext, R.raw.awesomeface);
+    }
+
+    public void setMix(float mix) {
+        this.mix = mix;
     }
 }
