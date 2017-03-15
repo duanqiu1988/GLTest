@@ -127,17 +127,17 @@ public class ShaderRenderer implements GLSurfaceView.Renderer {
     }
 
     private void createVAO() {
-        int[] arrays = new int[1];
-        int[] buffers = new int[1];
-        int buffer;
-        GLES30.glGenVertexArrays(1, arrays, 0);
-        GLES30.glGenBuffers(1, buffers, 0);
+        int[] vaos = new int[1];
+        int[] vbos = new int[1];
+        int vbo;
+        GLES30.glGenVertexArrays(1, vaos, 0);
+        GLES30.glGenBuffers(1, vbos, 0);
 
-        VAO = arrays[0];
-        buffer = buffers[0];
+        VAO = vaos[0];
+        vbo = vbos[0];
         GLES30.glBindVertexArray(VAO);
 
-        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, buffer);
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo);
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, triangle.length * FLOAT_SIZE_BYTES, triangleVertices, GLES30.GL_STATIC_DRAW);
 
         int positionHandle = GLUtil.getAttribLocation(program, "position");

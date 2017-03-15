@@ -13,12 +13,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private static final String[] NAMES = {
             "GL one", "GL two",
             "Hello Triangle", "Hello Rect",
-            "Shader"
+            "Shader", "Texture"
     };
     private static final Class[] CLASSES = {
             GLOneActivity.class, GLTwoActivity.class,
             HelloTriangleActivity.class, HelloRectActivity.class,
-            ShaderActivity.class
+            ShaderActivity.class, TextureActivity.class
     };
 
     @Override
