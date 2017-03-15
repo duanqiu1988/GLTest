@@ -20,7 +20,8 @@
         <activity android:name=".HelloTriangleActivity" />
         <activity android:name=".HelloRectActivity" />
         <activity android:name=".ShaderActivity" />
-        <activity android:name=".TextureActivity"></activity>
+        <activity android:name=".TextureActivity" />
+        <activity android:name=".TransformationActivity"></activity>
     </application>
 
 </manifest>
