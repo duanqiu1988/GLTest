@@ -24,7 +24,7 @@ public class GLUtil {
             int[] success = new int[1];
             GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, success, 0);
             if (success[0] != GLES30.GL_TRUE) {
-                Log.e(tag, "Chould not compile shader " + shaderType + ":");
+                Log.e(tag, "Could not compile shader " + shaderType + ":");
                 Log.e(tag, GLES30.glGetShaderInfoLog(shader));
                 GLES30.glDeleteShader(shader);
                 shader = 0;
@@ -55,7 +55,7 @@ public class GLUtil {
             int[] success = new int[1];
             GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, success, 0);
             if (success[0] != GLES30.GL_TRUE) {
-                Log.e(tag, "Chould not link program:");
+                Log.e(tag, "Could not link program:");
                 Log.e(tag, GLES30.glGetProgramInfoLog(program));
                 GLES30.glDeleteProgram(program);
                 program = 0;
@@ -66,5 +66,14 @@ public class GLUtil {
         GLES30.glDeleteShader(fragmentShader);
 
         return program;
+    }
+
+    public static int getAttribLocation(int program, String attr) {
+        int handle = GLES30.glGetAttribLocation(program, attr);
+        if (handle == -1) {
+            throw new RuntimeException("Could not find attribute location for " + attr);
+        }
+
+        return handle;
     }
 }

@@ -101,10 +101,7 @@ public class HelloRectRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, ebos[0]);
         GLES30.glBufferData(GLES30.GL_ELEMENT_ARRAY_BUFFER, indexes.length * 4, indexBuffer, GLES30.GL_STATIC_DRAW);
 
-        int positionHandle = GLES30.glGetAttribLocation(program, "position");
-        if (positionHandle == -1) {
-            throw new RuntimeException("Could not get attrib location for position");
-        }
+        int positionHandle = GLUtil.getAttribLocation(program, "position");
 
         GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 3 * 4, 0);
         GLES30.glEnableVertexAttribArray(positionHandle);

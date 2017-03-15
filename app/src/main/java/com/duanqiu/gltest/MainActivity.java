@@ -10,10 +10,16 @@ import android.widget.ListView;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private ListView listView;
-    private static final String[] NAMES = {"GL one", "GL two", "Hello Triangle", "Hello Rect"};
+    private static final String[] NAMES = {
+            "GL one", "GL two",
+            "Hello Triangle", "Hello Rect",
+            "Shader"
+    };
     private static final Class[] CLASSES = {
             GLOneActivity.class, GLTwoActivity.class,
-            HelloTriangleActivity.class, HelloRectActivity.class};
+            HelloTriangleActivity.class, HelloRectActivity.class,
+            ShaderActivity.class
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
