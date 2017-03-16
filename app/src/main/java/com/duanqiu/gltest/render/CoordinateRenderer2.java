@@ -136,20 +136,22 @@ public class CoordinateRenderer2 implements GLSurfaceView.Renderer {
         }
 
         createVAO();
-        Matrix.setLookAtM(mVMatrix, 0, 0, 0, -5, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        GLES30.glEnable(GLES30.GL_DEPTH_TEST);
+        Matrix.setLookAtM(mVMatrix, 0, 0, 0, -15, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES30.glViewport(0, 0, width, height);
         float ratio = (float) width / height;
-        Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1f, 100);
+//        Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1f, 100);
+        Matrix.perspectiveM(mProjMatrix, 0, 45f, ratio, 0.01f, 100);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
         GLES30.glClearColor(0.2f, 0.3f, 0.3f, 1f);
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
 
         GLES30.glUseProgram(program);
         GLUtil.checkGlError(TAG, "glUseProgram");
@@ -169,11 +171,14 @@ public class CoordinateRenderer2 implements GLSurfaceView.Renderer {
 
         GLES30.glBindVertexArray(VAO);
         long time = SystemClock.uptimeMillis() % 4000L;
-        float angle = 0.090f * ((int) time);
         for (int i = 0; i < 10; i++) {
             float[] mMMatrix = new float[16];
 
-            Matrix.setRotateM(mMMatrix, 0, angle, 1f, 1f, 0f);
+            float angle = i * 20;
+            if (i >= 5 && i < 9) {
+                angle = 0.090f * ((int) time);
+            }
+            Matrix.setRotateM(mMMatrix, 0, angle, cubePositions[i][0], cubePositions[i][1], cubePositions[i][2]);
             Matrix.translateM(mMMatrix, 0, cubePositions[i][0], cubePositions[i][1], cubePositions[i][2]);
 
             GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "model"), 1, false, mMMatrix, 0);
