@@ -21,7 +21,9 @@
         <activity android:name=".HelloRectActivity" />
         <activity android:name=".ShaderActivity" />
         <activity android:name=".TextureActivity" />
-        <activity android:name=".TransformationActivity"></activity>
+        <activity android:name=".TransformationActivity" />
+        <activity android:name=".CoordinateActivity" />
+        <activity android:name=".Coordinate2Activity"></activity>
     </application>
 
 </manifest>

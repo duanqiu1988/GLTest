@@ -1,32 +1,15 @@
 package com.duanqiu.gltest;
 
 import android.opengl.GLSurfaceView;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.duanqiu.gltest.render.ShaderRenderer;
 
-public class ShaderActivity extends AppCompatActivity {
-    GLSurfaceView glSurfaceView;
+public class ShaderActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        glSurfaceView = new GLSurfaceView(this);
-        glSurfaceView.setEGLContextClientVersion(3);
-        glSurfaceView.setRenderer(new ShaderRenderer());
-        setContentView(glSurfaceView);
+    protected GLSurfaceView.Renderer getRenderer() {
+        return new ShaderRenderer();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        glSurfaceView.onResume();
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        glSurfaceView.onPause();
-    }
 }

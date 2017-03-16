@@ -1,11 +1,9 @@
 package com.duanqiu.gltest.render;
 
 import android.content.Context;
-import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.os.SystemClock;
 
 import com.duanqiu.gltest.GLUtil;
 import com.duanqiu.gltest.R;
@@ -13,7 +11,6 @@ import com.duanqiu.gltest.R;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -22,49 +19,38 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by 俊杰 on 2017/3/14.
  */
 
-public class TransformationRenderer implements GLSurfaceView.Renderer {
+public class CoordinateRenderer implements GLSurfaceView.Renderer {
     public static final String TAG = "TransformationRenderer";
     private int program;
     private int VAO;
     private int texture;
     private int texture2;
     private FloatBuffer vertexBuffer;
-    private IntBuffer indexBuffer;
     private Context mContext;
     private float mix = 0.2f;
     private final float[] vertexes = {
-            // Positions         Colors     Texture Coordinates
-            0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,    // top right
-            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,   // bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,  // bottom left
-            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f    // top left
+            // Positions     Texture Coordinates
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,  // bottom left
+            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,    // top left
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,   // bottom right
+            0.5f, 0.5f, 0.0f, 1.0f, 1.0f   // top right
     };
 
-    private final int[] indexes = {
-            0, 1, 3,
-            1, 2, 3
-    };
-
-    private float[] mMVPMatrix = new float[16];
     private float[] mProjMatrix = new float[16];
     private float[] mMMatrix = new float[16];
     private float[] mVMatrix = new float[16];
 
-    public TransformationRenderer(Context context) {
+    public CoordinateRenderer(Context context) {
         vertexBuffer = ByteBuffer.allocateDirect(vertexes.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         vertexBuffer.put(vertexes).position(0);
-
-        indexBuffer = ByteBuffer.allocateDirect(indexes.length * 4)
-                .order(ByteOrder.nativeOrder()).asIntBuffer();
-        indexBuffer.put(indexes).position(0);
 
         mContext = context;
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        program = GLUtil.createProgram(TAG, mContext, R.raw.transformation_vert, R.raw.transformation_frag);
+        program = GLUtil.createProgram(TAG, mContext, R.raw.coordinate_vert, R.raw.coordinate_frag);
         if (program == 0) {
             return;
         }
@@ -98,27 +84,23 @@ public class TransformationRenderer implements GLSurfaceView.Renderer {
 
         GLES30.glUniform1f(GLES30.glGetUniformLocation(program, "mix"), mix);
 
-        long time = SystemClock.uptimeMillis() % 4000L;
-        float angle = 0.090f * ((int) time);
-        Matrix.setRotateM(mMMatrix, 0, angle, 0, 0, 1.0f);
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mMMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
+        Matrix.setRotateM(mMMatrix, 0, 45, 1, 0, 0);
 
-        GLES20.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "uMVPMatrix"), 1, false, mMVPMatrix, 0);
+        GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "model"), 1, false, mMMatrix, 0);
+        GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "view"), 1, false, mVMatrix, 0);
+        GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "projection"), 1, false, mProjMatrix, 0);
 
         GLES30.glBindVertexArray(VAO);
-        GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_INT, 0);
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
         GLES30.glBindVertexArray(0);
     }
 
     private void createVAO() {
         int[] vaos = new int[1];
         int[] vbos = new int[1];
-        int[] ebos = new int[1];
 
         GLES30.glGenVertexArrays(1, vaos, 0);
         GLES30.glGenBuffers(1, vbos, 0);
-        GLES30.glGenBuffers(1, ebos, 0);
 
         VAO = vaos[0];
         GLES30.glBindVertexArray(VAO);
@@ -126,20 +108,14 @@ public class TransformationRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vaos[0]);
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, vertexes.length * 4, vertexBuffer, GLES30.GL_STATIC_DRAW);
 
-        GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, ebos[0]);
-        GLES30.glBufferData(GLES30.GL_ELEMENT_ARRAY_BUFFER, indexes.length * 4, indexBuffer, GLES30.GL_STATIC_DRAW);
 
         int positionHandle = GLUtil.getAttribLocation(program, "position");
-        int colorHandle = GLUtil.getAttribLocation(program, "color");
         int coordHandle = GLUtil.getAttribLocation(program, "texCoord");
 
-        GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 8 * 4, 0);
+        GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
         GLES30.glEnableVertexAttribArray(positionHandle);
 
-        GLES30.glVertexAttribPointer(colorHandle, 3, GLES30.GL_FLOAT, false, 8 * 4, 3 * 4);
-        GLES30.glEnableVertexAttribArray(colorHandle);
-
-        GLES30.glVertexAttribPointer(coordHandle, 2, GLES30.GL_FLOAT, false, 8 * 4, 6 * 4);
+        GLES30.glVertexAttribPointer(coordHandle, 2, GLES30.GL_FLOAT, false, 5 * 4, 3 * 4);
         GLES30.glEnableVertexAttribArray(coordHandle);
 
 
