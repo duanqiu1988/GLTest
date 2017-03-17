@@ -1,4 +1,4 @@
-package com.duanqiu.gltest;
+package com.duanqiu.gltest.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;

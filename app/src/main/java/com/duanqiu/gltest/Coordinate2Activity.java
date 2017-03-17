@@ -2,12 +2,12 @@ package com.duanqiu.gltest;
 
 import android.opengl.GLSurfaceView;
 
-import com.duanqiu.gltest.render.CoordinateRenderer2;
+import com.duanqiu.gltest.render.Coordinate2Renderer;
 
 public class Coordinate2Activity extends BaseActivity {
 
     @Override
     protected GLSurfaceView.Renderer getRenderer() {
-        return new CoordinateRenderer2(this);
+        return new Coordinate2Renderer(this);
     }
 }

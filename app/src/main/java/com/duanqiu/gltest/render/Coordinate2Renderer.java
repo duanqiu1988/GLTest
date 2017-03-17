@@ -6,7 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
-import com.duanqiu.gltest.GLUtil;
+import com.duanqiu.gltest.util.GLUtil;
 import com.duanqiu.gltest.R;
 
 import java.nio.ByteBuffer;
@@ -20,8 +20,8 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by 俊杰 on 2017/3/14.
  */
 
-public class CoordinateRenderer2 implements GLSurfaceView.Renderer {
-    public static final String TAG = "TransformationRenderer";
+public class Coordinate2Renderer implements GLSurfaceView.Renderer {
+    public static final String TAG = "CoordinateRenderer2";
     private int program;
     private int VAO;
     private int texture;
@@ -120,7 +120,7 @@ public class CoordinateRenderer2 implements GLSurfaceView.Renderer {
     //    private float[] mMMatrix = new float[16];
     private float[] mVMatrix = new float[16];
 
-    public CoordinateRenderer2(Context context) {
+    public Coordinate2Renderer(Context context) {
         vertexBuffer = ByteBuffer.allocateDirect(vertices.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         vertexBuffer.put(vertices).position(0);
@@ -137,7 +137,6 @@ public class CoordinateRenderer2 implements GLSurfaceView.Renderer {
 
         createVAO();
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
-        Matrix.setLookAtM(mVMatrix, 0, 0, 0, -15, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
     }
 
     @Override
@@ -147,6 +146,10 @@ public class CoordinateRenderer2 implements GLSurfaceView.Renderer {
 //        Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 1f, 100);
         Matrix.perspectiveM(mProjMatrix, 0, 45f, ratio, 0.01f, 100);
     }
+
+    float radius = 10f;
+    double ang = 0f;
+    float n = 8f;
 
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -166,11 +169,19 @@ public class CoordinateRenderer2 implements GLSurfaceView.Renderer {
 
         GLES30.glUniform1f(GLES30.glGetUniformLocation(program, "mix"), mix);
 
+        long time = SystemClock.uptimeMillis() % 4000L;
+
+        ang = (ang + 2 * Math.PI / 60 / n) % (2 * Math.PI);
+        float ratioX = (float) Math.sin(ang);
+        float ratioZ = (float) Math.cos(ang);
+        float camX = ratioX * radius;
+        float camz = ratioZ * radius;
+        Matrix.setLookAtM(mVMatrix, 0, camX, 0, camz, 0f, 0f, 0f, 0f, 1f, 0f);
         GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "view"), 1, false, mVMatrix, 0);
         GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "projection"), 1, false, mProjMatrix, 0);
 
         GLES30.glBindVertexArray(VAO);
-        long time = SystemClock.uptimeMillis() % 4000L;
+
         for (int i = 0; i < 10; i++) {
             float[] mMMatrix = new float[16];
 

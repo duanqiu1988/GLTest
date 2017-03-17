@@ -5,7 +5,7 @@ import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
-import com.duanqiu.gltest.GLUtil;
+import com.duanqiu.gltest.util.GLUtil;
 import com.duanqiu.gltest.R;
 
 import java.nio.ByteBuffer;

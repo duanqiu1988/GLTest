@@ -19,7 +19,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        glSurfaceView = new GLSurfaceView(this);
+        glSurfaceView = getGLSurfaceView();
         glSurfaceView.setEGLContextClientVersion(3);
         glSurfaceView.setRenderer(getRenderer());
         setContentView(glSurfaceView);
@@ -27,6 +27,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected abstract GLSurfaceView.Renderer getRenderer();
+
+    protected GLSurfaceView getGLSurfaceView(){
+        return new GLSurfaceView(this);
+    }
 
     protected boolean detectOpenGLES30() {
         ActivityManager am =

@@ -23,7 +23,8 @@
         <activity android:name=".TextureActivity" />
         <activity android:name=".TransformationActivity" />
         <activity android:name=".CoordinateActivity" />
-        <activity android:name=".Coordinate2Activity"></activity>
+        <activity android:name=".Coordinate2Activity" />
+        <activity android:name=".CameraActivity"></activity>
     </application>
 
 </manifest>
