@@ -46,18 +46,15 @@ public class CameraSurfaceView extends GLSurfaceView implements ScaleGestureDete
                         break;
                     }
 
-                    if (absX > absY) {
-                        if (event.getX() > x) {
-                            gestureListener.onX(false);
-                        } else {
-                            gestureListener.onX(true);
-                        }
+                    if (event.getX() > x) {
+                        gestureListener.onX(false);
                     } else {
-                        if (event.getY() > y) {
-                            gestureListener.onY(false);
-                        } else {
-                            gestureListener.onY(true);
-                        }
+                        gestureListener.onX(true);
+                    }
+                    if (event.getY() > y) {
+                        gestureListener.onY(false);
+                    } else {
+                        gestureListener.onY(true);
                     }
                 }
                 x = event.getX();

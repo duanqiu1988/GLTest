@@ -140,6 +140,10 @@ public class CameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView
         Matrix.perspectiveM(mProjMatrix, 0, 45f, ratio, 0.01f, 100);
     }
 
+    private long currentFrame = 0;
+    private long lastFrame = 0;
+    private float deltaTime = 0.0f;
+
     @Override
     public void onDrawFrame(GL10 gl) {
         GLES30.glClearColor(0.2f, 0.3f, 0.3f, 1f);
@@ -158,6 +162,9 @@ public class CameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView
 
         GLES30.glUniform1f(GLES30.glGetUniformLocation(program, "mix"), mix);
 
+        currentFrame = SystemClock.uptimeMillis();
+        deltaTime = (currentFrame - lastFrame) / 1000f;
+        lastFrame = currentFrame;
         long time = SystemClock.uptimeMillis() % 4000L;
         Vector3 center = Vector3.addition(mCameraPos, mCameraFront);
         Matrix.setLookAtM(mVMatrix, 0,
@@ -219,16 +226,16 @@ public class CameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView
         this.mix = mix;
     }
 
-    static final float speed = 0.1f;
+    static final float speed = 10f;
 
     @Override
     public void onX(boolean left) {
         if (left) {
             mCameraPos = Vector3.addition(mCameraPos,
-                    Vector3.scale(Vector3.normalize(Vector3.crossProduct(mCameraFront, mCameraUp)), speed));
+                    Vector3.scale(Vector3.normalize(Vector3.crossProduct(mCameraFront, mCameraUp)), getSpeed()));
         } else {
             mCameraPos = Vector3.subtraction(mCameraPos,
-                    Vector3.scale(Vector3.normalize(Vector3.crossProduct(mCameraFront, mCameraUp)), speed));
+                    Vector3.scale(Vector3.normalize(Vector3.crossProduct(mCameraFront, mCameraUp)), getSpeed()));
         }
     }
 
@@ -236,10 +243,10 @@ public class CameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView
     public void onY(boolean top) {
         if (top) {
             mCameraPos = Vector3.subtraction(mCameraPos,
-                    Vector3.scale(Vector3.normalize(mCameraUp), speed));
+                    Vector3.scale(Vector3.normalize(mCameraUp), getSpeed()));
         } else {
             mCameraPos = Vector3.addition(mCameraPos,
-                    Vector3.scale(Vector3.normalize(mCameraUp), speed));
+                    Vector3.scale(Vector3.normalize(mCameraUp), getSpeed()));
         }
     }
 
@@ -248,9 +255,13 @@ public class CameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView
     public void onZ(boolean pinchIn) {
 
         if (pinchIn) {
-            mCameraPos = Vector3.subtraction(mCameraPos, Vector3.scale(mCameraFront, speed));
+            mCameraPos = Vector3.subtraction(mCameraPos, Vector3.scale(mCameraFront, getSpeed()));
         } else {
-            mCameraPos = Vector3.addition(mCameraPos, Vector3.scale(mCameraFront, speed));
+            mCameraPos = Vector3.addition(mCameraPos, Vector3.scale(mCameraFront, getSpeed()));
         }
+    }
+
+    private float getSpeed() {
+        return speed * deltaTime;
     }
 }
