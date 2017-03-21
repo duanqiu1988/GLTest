@@ -24,7 +24,8 @@
         <activity android:name=".TransformationActivity" />
         <activity android:name=".CoordinateActivity" />
         <activity android:name=".Coordinate2Activity" />
-        <activity android:name=".CameraActivity"></activity>
+        <activity android:name=".CameraActivity" />
+        <activity android:name=".FBOActivity"></activity>
     </application>
 
 </manifest>
