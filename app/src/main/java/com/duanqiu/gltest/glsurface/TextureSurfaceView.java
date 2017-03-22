@@ -4,7 +4,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
-import com.duanqiu.gltest.render.TextureRenderer;
+import com.duanqiu.gltest.render.start.TextureRenderer;
 
 /**
  * Created by jjduan on 3/15/17.
