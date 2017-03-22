@@ -70,20 +70,25 @@ public class FBORenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        LogUtil.d(TAG, "onSurfaceCreated");
         program = GLUtil.createProgram(TAG, mContext, R.raw.fbo_vert, R.raw.fbo_frag);
         screenProgram = GLUtil.createProgram(TAG, mContext, R.raw.fbo_screen_vert, R.raw.fbo_screen_frag);
         if (program == 0 || screenProgram == 0) {
             return;
         }
 
-        createVAO();
-        createScreenVAO();
-        createFBO();
+
         Matrix.setLookAtM(mVMatrix, 0, 0, 0, -5, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        mScreenWidth = width;
+        mScreenHeight = height;
+        LogUtil.d(TAG, "onSurfaceChanged width: " + width+", height: "+height+", screenWidth: "+mScreenWidth+", screenHeight: " +mScreenHeight);
+        createVAO();
+        createScreenVAO();
+        createFBO();
         GLES30.glViewport(0, 0, width, height);
         float ratio = (float) width / height;
         Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
@@ -92,10 +97,10 @@ public class FBORenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
 
+        /********************************** draw fbo **********************************/
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, FBO);
-        GLES30.glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-        GLES30.glEnable(GLES30.GL_DEPTH_TEST);
+        GLES30.glClearColor(1f, 0.5f, 0.1f, 0.1f);
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
 
         GLES30.glUseProgram(program);
         GLUtil.checkGlError(TAG, "glUseProgram");
@@ -104,11 +109,9 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture);
         GLES30.glUniform1i(GLES30.glGetUniformLocation(program, "outTexture"), 0);
 
-        GLES30.glActiveTexture(GLES30.GL_TEXTURE1);
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture2);
-        GLES30.glUniform1i(GLES30.glGetUniformLocation(program, "outTexture2"), 1);
-
-        GLES30.glUniform1f(GLES30.glGetUniformLocation(program, "mix"), mix);
+//        GLES30.glActiveTexture(GLES30.GL_TEXTURE1);
+//        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture2);
+//        GLES30.glUniform1i(GLES30.glGetUniformLocation(program, "outTexture2"), 1);
 
         Matrix.setRotateM(mMMatrix, 0, 45, 1, 0, 0);
 
@@ -120,14 +123,16 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
         GLES30.glBindVertexArray(0);
 
+        /********************************** draw screen from fbo ************************************/
+
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
         GLES30.glClearColor(1f, 1f, 1f, 1f);
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
 
         GLES30.glUseProgram(screenProgram);
         GLUtil.checkGlError(TAG, "glUseScreenProgram");
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureColorBuffer);
         GLES30.glBindVertexArray(screenVAO);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureColorBuffer);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
         GLES30.glBindVertexArray(0);
     }
@@ -161,6 +166,7 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         // texture
         texture = GLUtil.bindTexture2D(mContext, R.raw.container);
         texture2 = GLUtil.bindTexture2D(mContext, R.raw.awesomeface);
+        LogUtil.d(TAG, "texture: " + texture + ", texture2: " + texture2);
     }
 
     private void createScreenVAO() {
@@ -192,8 +198,8 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         FBO = fbos[0];
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, FBO);
         textureColorBuffer = generateAttachmentTexture();
+        LogUtil.d(TAG, "textureColorBuffer: " + textureColorBuffer);
         GLES30.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES30.GL_COLOR_ATTACHMENT0, GLES30.GL_TEXTURE_2D, textureColorBuffer, 0);
-
 
         int[] rbos = new int[1];
         GLES30.glGenRenderbuffers(1, rbos, 0);
@@ -201,8 +207,6 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         GLES30.glRenderbufferStorage(GLES30.GL_RENDERBUFFER, GLES30.GL_DEPTH24_STENCIL8, mScreenWidth, mScreenHeight);
         GLES30.glBindRenderbuffer(GLES30.GL_RENDERBUFFER, 0);
         GLES30.glFramebufferRenderbuffer(GLES30.GL_FRAMEBUFFER, GLES30.GL_DEPTH_STENCIL_ATTACHMENT, GLES30.GL_RENDERBUFFER, rbos[0]);
-
-
         if (GLES30.glCheckFramebufferStatus(GLES30.GL_FRAMEBUFFER) != GLES30.GL_FRAMEBUFFER_COMPLETE) {
             throw new RuntimeException("FrameBuffer is not complete");
         }
@@ -216,10 +220,11 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textures[0]);
         GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGB, mScreenWidth, mScreenHeight,
                 0, GLES30.GL_RGB, GLES30.GL_UNSIGNED_BYTE, null);
-        GLES30.glTexParameteri(textures[0], GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
-        GLES30.glTexParameteri(textures[0], GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
         GLUtil.checkGlError(TAG, "generate attachment texture");
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+
         return textures[0];
     }
 
