@@ -7,6 +7,7 @@ import android.opengl.Matrix;
 
 import com.duanqiu.gltest.util.GLUtil;
 import com.duanqiu.gltest.R;
+import com.duanqiu.gltest.util.Shader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -21,7 +22,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class CoordinateRenderer implements GLSurfaceView.Renderer {
     public static final String TAG = "TransformationRenderer";
-    private int program;
+    private Shader shader;
     private int VAO;
     private int texture;
     private int texture2;
@@ -50,10 +51,7 @@ public class CoordinateRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        program = GLUtil.createProgram(TAG, mContext, R.raw.coordinate_vert, R.raw.coordinate_frag);
-        if (program == 0) {
-            return;
-        }
+        shader = Shader.createShader(TAG, mContext, R.raw.coordinate_vert, R.raw.coordinate_frag);
 
         createVAO();
         Matrix.setLookAtM(mVMatrix, 0, 0, 0, -5, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
@@ -71,24 +69,23 @@ public class CoordinateRenderer implements GLSurfaceView.Renderer {
         GLES30.glClearColor(0.2f, 0.3f, 0.3f, 1f);
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
 
-        GLES30.glUseProgram(program);
-        GLUtil.checkGlError(TAG, "glUseProgram");
+        shader.use();
 
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture);
-        GLES30.glUniform1i(GLES30.glGetUniformLocation(program, "outTexture"), 0);
+        GLES30.glUniform1i(shader.getUniformLocation("outTexture"), 0);
 
         GLES30.glActiveTexture(GLES30.GL_TEXTURE1);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture2);
-        GLES30.glUniform1i(GLES30.glGetUniformLocation(program, "outTexture2"), 1);
+        GLES30.glUniform1i(shader.getUniformLocation("outTexture2"), 1);
 
-        GLES30.glUniform1f(GLES30.glGetUniformLocation(program, "mix"), mix);
+        GLES30.glUniform1f(shader.getUniformLocation("mix"), mix);
 
         Matrix.setRotateM(mMMatrix, 0, 45, 1, 0, 0);
 
-        GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "model"), 1, false, mMMatrix, 0);
-        GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "view"), 1, false, mVMatrix, 0);
-        GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "projection"), 1, false, mProjMatrix, 0);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("view"), 1, false, mVMatrix, 0);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
 
         GLES30.glBindVertexArray(VAO);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
@@ -109,8 +106,8 @@ public class CoordinateRenderer implements GLSurfaceView.Renderer {
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, vertexes.length * 4, vertexBuffer, GLES30.GL_STATIC_DRAW);
 
 
-        int positionHandle = GLUtil.getAttribLocation(program, "position");
-        int coordHandle = GLUtil.getAttribLocation(program, "texCoord");
+        int positionHandle = shader.getAttribLocation("position");
+        int coordHandle = shader.getAttribLocation("texCoord");
 
         GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
         GLES30.glEnableVertexAttribArray(positionHandle);

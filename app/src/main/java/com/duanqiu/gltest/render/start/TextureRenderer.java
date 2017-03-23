@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView;
 
 import com.duanqiu.gltest.util.GLUtil;
 import com.duanqiu.gltest.R;
+import com.duanqiu.gltest.util.Shader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -21,7 +22,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class TextureRenderer implements GLSurfaceView.Renderer {
     public static final String TAG = "TextureRenderer";
-    private int program;
+    private Shader shader;
     private int VAO;
     private int texture;
     private int texture2;
@@ -56,10 +57,7 @@ public class TextureRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        program = GLUtil.createProgram(TAG, mContext, R.raw.texture_vert, R.raw.texture_frag);
-        if (program == 0) {
-            return;
-        }
+        shader = Shader.createShader(TAG, mContext, R.raw.texture_vert, R.raw.texture_frag);
 
         createVAO();
     }
@@ -74,18 +72,17 @@ public class TextureRenderer implements GLSurfaceView.Renderer {
         GLES30.glClearColor(0.2f, 0.3f, 0.3f, 1f);
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
 
-        GLES30.glUseProgram(program);
-        GLUtil.checkGlError(TAG, "glUseProgram");
+        shader.use();
 
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture);
-        GLES30.glUniform1i(GLES30.glGetUniformLocation(program, "outTexture"), 0);
+        GLES30.glUniform1i(shader.getUniformLocation("outTexture"), 0);
 
         GLES30.glActiveTexture(GLES30.GL_TEXTURE1);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture2);
-        GLES30.glUniform1i(GLES30.glGetUniformLocation(program, "outTexture2"), 1);
+        GLES30.glUniform1i(shader.getUniformLocation("outTexture2"), 1);
 
-        GLES30.glUniform1f(GLES30.glGetUniformLocation(program, "mix"), mix);
+        GLES30.glUniform1f(shader.getUniformLocation("mix"), mix);
 
         GLES30.glBindVertexArray(VAO);
         GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_INT, 0);
@@ -110,9 +107,9 @@ public class TextureRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, ebos[0]);
         GLES30.glBufferData(GLES30.GL_ELEMENT_ARRAY_BUFFER, indexes.length * 4, indexBuffer, GLES30.GL_STATIC_DRAW);
 
-        int positionHandle = GLUtil.getAttribLocation(program, "position");
-        int colorHandle = GLUtil.getAttribLocation(program, "color");
-        int coordHandle = GLUtil.getAttribLocation(program, "texCoord");
+        int positionHandle = shader.getAttribLocation("position");
+        int colorHandle = shader.getAttribLocation("color");
+        int coordHandle = shader.getAttribLocation("texCoord");
 
         GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 8 * 4, 0);
         GLES30.glEnableVertexAttribArray(positionHandle);

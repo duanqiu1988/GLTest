@@ -47,6 +47,49 @@ public class Vector3 {
                 vectorA.x * vectorB.y - vectorA.y * vectorB.x);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Vector3)) {
+            return false;
+        }
+
+        return equals(this, (Vector3) obj);
+    }
+
+    public Vector3 addition(Vector3 vectorB) {
+        x += vectorB.x;
+        y += vectorB.y;
+        z += vectorB.z;
+        return this;
+    }
+
+    public Vector3 subtraction(Vector3 vectorB) {
+        x -= vectorB.x;
+        y -= vectorB.y;
+        z -= vectorB.z;
+        return this;
+    }
+
+
+    public Vector3 scale(float scale) {
+        x *= scale;
+        y *= scale;
+        z *= scale;
+        return this;
+    }
+
+    public Vector3 crossProduct(Vector3 vectorB) {
+        float x = this.y * vectorB.z - this.z * vectorB.y;
+        float y = this.z * vectorB.x - this.x * vectorB.z;
+        float z = this.x * vectorB.y - this.y * vectorB.x;
+
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
+        return this;
+    }
+
     public static float magnitude(Vector3 vector) {
         return (float) Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2) + Math.pow(vector.z, 2));
     }
@@ -60,5 +103,10 @@ public class Vector3 {
         }
 
         return vector;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
     }
 }

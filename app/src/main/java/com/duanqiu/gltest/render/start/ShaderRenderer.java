@@ -4,7 +4,7 @@ import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 
-import com.duanqiu.gltest.util.GLUtil;
+import com.duanqiu.gltest.util.Shader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -22,8 +22,8 @@ public class ShaderRenderer implements GLSurfaceView.Renderer {
     private static final int FLOAT_SIZE_BYTES = 4;
     private FloatBuffer triangleVertices;
     private FloatBuffer triangleVertices2;
-    private int program;
-    private int program2;
+    private Shader shader;
+    private Shader shader2;
     private int VAO;
     private int VAO2;
     private final float[] triangle = {
@@ -78,15 +78,9 @@ public class ShaderRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        program = GLUtil.createProgram(TAG, vertextShader, fragmentShader);
-        if (program == 0) {
-            return;
-        }
+        shader = Shader.createShader(TAG, vertextShader, fragmentShader);
 
-        program2 = GLUtil.createProgram(TAG, vertextShader2, fragmentShader2);
-        if (program2 == 0) {
-            return;
-        }
+        shader2 = Shader.createShader(TAG, vertextShader2, fragmentShader2);
 
         createVAO();
         createVAO2();
@@ -101,23 +95,21 @@ public class ShaderRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         GLES30.glClearColor(0.2f, 0.3f, 0.3f, 1f);
         GLES30.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        GLES30.glUseProgram(program);
-        GLUtil.checkGlError(TAG, "glUseProgram");
+        shader.use();
 
         long time = System.currentTimeMillis() / 200;
         float yOff = (float) ((Math.sin(time) / 2) - 0.5f);
 
-        GLES30.glUniform1f(GLES30.glGetUniformLocation(program, "yOff"), yOff);
+        GLES30.glUniform1f(shader.getUniformLocation("yOff"), yOff);
 
         GLES30.glBindVertexArray(VAO);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 3);
         GLES30.glBindVertexArray(0);
 
-        GLES30.glUseProgram(program2);
-        GLUtil.checkGlError(TAG, "glUseProgram");
+        shader2.use();
 
         float greenValue = (float) ((Math.sin(time) / 2) + 0.5f);
-        int vertexColorLocation = GLES30.glGetUniformLocation(program2, "color");
+        int vertexColorLocation = shader2.getUniformLocation("color");
         GLES30.glUniform4f(vertexColorLocation, 0f, greenValue, 0f, 1f);
 
         GLES30.glBindVertexArray(VAO2);
@@ -140,8 +132,8 @@ public class ShaderRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo);
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, triangle.length * FLOAT_SIZE_BYTES, triangleVertices, GLES30.GL_STATIC_DRAW);
 
-        int positionHandle = GLUtil.getAttribLocation(program, "position");
-        int colorHandle = GLUtil.getAttribLocation(program, "color");
+        int positionHandle = shader.getAttribLocation("position");
+        int colorHandle = shader.getAttribLocation("color");
         GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 6 * FLOAT_SIZE_BYTES, 0);
         GLES30.glEnableVertexAttribArray(positionHandle);
 
@@ -166,7 +158,7 @@ public class ShaderRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, buffer);
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, triangle2.length * FLOAT_SIZE_BYTES, triangleVertices2, GLES30.GL_STATIC_DRAW);
 
-        int positionHandle = GLUtil.getAttribLocation(program2, "position");
+        int positionHandle = shader2.getAttribLocation("position");
         GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 3 * FLOAT_SIZE_BYTES, 0);
         GLES30.glEnableVertexAttribArray(positionHandle);
 

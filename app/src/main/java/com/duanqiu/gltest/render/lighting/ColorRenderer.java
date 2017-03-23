@@ -1,4 +1,4 @@
-package com.duanqiu.gltest.render.start;
+package com.duanqiu.gltest.render.lighting;
 
 import android.content.Context;
 import android.opengl.GLES30;
@@ -6,8 +6,8 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
-import com.duanqiu.gltest.util.GLUtil;
 import com.duanqiu.gltest.R;
+import com.duanqiu.gltest.util.GLUtil;
 import com.duanqiu.gltest.util.Shader;
 
 import java.nio.ByteBuffer;
@@ -21,8 +21,8 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by 俊杰 on 2017/3/14.
  */
 
-public class Coordinate2Renderer implements GLSurfaceView.Renderer {
-    public static final String TAG = "CoordinateRenderer2";
+public class ColorRenderer implements GLSurfaceView.Renderer {
+    public static final String TAG = "ColorRenderer";
     private Shader shader;
     private int VAO;
     private int texture;
@@ -121,7 +121,7 @@ public class Coordinate2Renderer implements GLSurfaceView.Renderer {
     //    private float[] mMMatrix = new float[16];
     private float[] mVMatrix = new float[16];
 
-    public Coordinate2Renderer(Context context) {
+    public ColorRenderer(Context context) {
         vertexBuffer = ByteBuffer.allocateDirect(vertices.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         vertexBuffer.put(vertices).position(0);

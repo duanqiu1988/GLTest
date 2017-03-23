@@ -8,6 +8,7 @@ import android.opengl.Matrix;
 import com.duanqiu.gltest.R;
 import com.duanqiu.gltest.util.GLUtil;
 import com.duanqiu.gltest.util.LogUtil;
+import com.duanqiu.gltest.util.Shader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -22,8 +23,8 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class FBORenderer implements GLSurfaceView.Renderer {
     public static final String TAG = "FBORenderer";
-    private int program;
-    private int screenProgram;
+    private Shader shader;
+    private Shader screenShader;
     private int VAO;
     private int screenVAO;
     private int texture;
@@ -71,12 +72,8 @@ public class FBORenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         LogUtil.d(TAG, "onSurfaceCreated");
-        program = GLUtil.createProgram(TAG, mContext, R.raw.fbo_vert, R.raw.fbo_frag);
-        screenProgram = GLUtil.createProgram(TAG, mContext, R.raw.fbo_screen_vert, R.raw.fbo_screen_frag);
-        if (program == 0 || screenProgram == 0) {
-            return;
-        }
-
+        shader = Shader.createShader(TAG, mContext, R.raw.fbo_vert, R.raw.fbo_frag);
+        screenShader = Shader.createShader(TAG, mContext, R.raw.fbo_screen_vert, R.raw.fbo_screen_frag);
 
         Matrix.setLookAtM(mVMatrix, 0, 0, 0, -5, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
     }
@@ -85,7 +82,7 @@ public class FBORenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         mScreenWidth = width;
         mScreenHeight = height;
-        LogUtil.d(TAG, "onSurfaceChanged width: " + width+", height: "+height+", screenWidth: "+mScreenWidth+", screenHeight: " +mScreenHeight);
+        LogUtil.d(TAG, "onSurfaceChanged width: " + width + ", height: " + height + ", screenWidth: " + mScreenWidth + ", screenHeight: " + mScreenHeight);
         createVAO();
         createScreenVAO();
         createFBO();
@@ -102,12 +99,11 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         GLES30.glClearColor(1f, 0.5f, 0.1f, 0.1f);
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
 
-        GLES30.glUseProgram(program);
-        GLUtil.checkGlError(TAG, "glUseProgram");
+        shader.use();
 
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture);
-        GLES30.glUniform1i(GLES30.glGetUniformLocation(program, "outTexture"), 0);
+        GLES30.glUniform1i(shader.getUniformLocation("outTexture"), 0);
 
 //        GLES30.glActiveTexture(GLES30.GL_TEXTURE1);
 //        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture2);
@@ -115,9 +111,9 @@ public class FBORenderer implements GLSurfaceView.Renderer {
 
         Matrix.setRotateM(mMMatrix, 0, 45, 1, 0, 0);
 
-        GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "model"), 1, false, mMMatrix, 0);
-        GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "view"), 1, false, mVMatrix, 0);
-        GLES30.glUniformMatrix4fv(GLES30.glGetUniformLocation(program, "projection"), 1, false, mProjMatrix, 0);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("view"), 1, false, mVMatrix, 0);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
 
         GLES30.glBindVertexArray(VAO);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
@@ -129,8 +125,7 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         GLES30.glClearColor(1f, 1f, 1f, 1f);
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
 
-        GLES30.glUseProgram(screenProgram);
-        GLUtil.checkGlError(TAG, "glUseScreenProgram");
+        screenShader.use();
         GLES30.glBindVertexArray(screenVAO);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureColorBuffer);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
@@ -151,8 +146,8 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, vertexes.length * 4, vertexBuffer, GLES30.GL_STATIC_DRAW);
 
 
-        int positionHandle = GLUtil.getAttribLocation(program, "position");
-        int coordHandle = GLUtil.getAttribLocation(program, "texCoord");
+        int positionHandle = shader.getAttribLocation("position");
+        int coordHandle = shader.getAttribLocation("texCoord");
 
         GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
         GLES30.glEnableVertexAttribArray(positionHandle);
@@ -181,8 +176,8 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbos[0]);
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, screenVertexes.length * 4, screenVertexBuffer, GLES30.GL_STATIC_DRAW);
 
-        int positionHandle = GLES30.glGetAttribLocation(screenProgram, "position");
-        int coordHandle = GLES30.glGetAttribLocation(screenProgram, "texCoord");
+        int positionHandle = screenShader.getAttribLocation("position");
+        int coordHandle = screenShader.getAttribLocation("texCoord");
 
         GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
         GLES30.glEnableVertexAttribArray(positionHandle);

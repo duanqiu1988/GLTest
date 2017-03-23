@@ -8,6 +8,9 @@
         <item
             android:id="@+id/advanced"
             android:title="advanced" />
+        <item
+            android:id="@+id/lighting"
+            android:title="lighting" />
     </group>
 
 </menu>

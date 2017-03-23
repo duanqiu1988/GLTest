@@ -26,23 +26,6 @@ public class GLUtil {
         }
     }
 
-    public static int loadShader(String tag, int shaderType, String shaderSource) {
-        int shader = GLES30.glCreateShader(shaderType);
-        if (shader != 0) {
-            GLES30.glShaderSource(shader, shaderSource);
-            GLES30.glCompileShader(shader);
-            int[] success = new int[1];
-            GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, success, 0);
-            if (success[0] != GLES30.GL_TRUE) {
-                Log.e(tag, "Could not compile shader " + shaderType + ":");
-                Log.e(tag, GLES30.glGetShaderInfoLog(shader));
-                GLES30.glDeleteShader(shader);
-                shader = 0;
-            }
-        }
-        return shader;
-    }
-
     public static String readRawTextFile(Context context, @RawRes int resId) {
         StringBuilder builder = new StringBuilder();
         BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(resId)));
@@ -57,55 +40,6 @@ public class GLUtil {
 
 
         return builder.toString();
-    }
-
-
-    public static int createProgram(String tag, Context context, @RawRes int vertex, @RawRes int frag) {
-        return createProgram(tag, readRawTextFile(context, vertex), readRawTextFile(context, frag));
-    }
-
-    public static int createProgram(String tag, String vertexShaderSource, String fragmentShaderSource) {
-        int vertexShader = loadShader(tag, GLES30.GL_VERTEX_SHADER, vertexShaderSource);
-        if (vertexShader == 0) {
-            return 0;
-        }
-
-        int fragmentShader = loadShader(tag, GLES30.GL_FRAGMENT_SHADER, fragmentShaderSource);
-        if (fragmentShader == 0) {
-            return 0;
-        }
-
-        int program;
-        program = GLES30.glCreateProgram();
-        if (program != 0) {
-            GLES30.glAttachShader(program, vertexShader);
-            checkGlError(tag, "attach vertex shader");
-            GLES30.glAttachShader(program, fragmentShader);
-            checkGlError(tag, "attach fragment shader");
-            GLES30.glLinkProgram(program);
-            int[] success = new int[1];
-            GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, success, 0);
-            if (success[0] != GLES30.GL_TRUE) {
-                Log.e(tag, "Could not link program:");
-                Log.e(tag, GLES30.glGetProgramInfoLog(program));
-                GLES30.glDeleteProgram(program);
-                program = 0;
-            }
-        }
-
-        GLES30.glDeleteShader(vertexShader);
-        GLES30.glDeleteShader(fragmentShader);
-
-        return program;
-    }
-
-    public static int getAttribLocation(int program, String attr) {
-        int handle = GLES30.glGetAttribLocation(program, attr);
-        if (handle == -1) {
-            throw new RuntimeException("Could not find attribute location for " + attr);
-        }
-
-        return handle;
     }
 
     public static void texImage2D(InputStream inputStream) {
@@ -124,7 +58,7 @@ public class GLUtil {
         bm.recycle();
     }
 
-    public static int bindTexture2D(Context context, @RawRes int resId){
+    public static int bindTexture2D(Context context, @RawRes int resId) {
         int[] textures = new int[1];
         GLES30.glGenTextures(1, textures, 0);
         int texture = textures[0];

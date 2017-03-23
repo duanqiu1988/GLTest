@@ -3,7 +3,7 @@ package com.duanqiu.gltest.render.start;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 
-import com.duanqiu.gltest.util.GLUtil;
+import com.duanqiu.gltest.util.Shader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -19,7 +19,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class HelloRectRenderer implements GLSurfaceView.Renderer {
     public static final String TAG = "HelloRectRenderer";
-    private int program;
+    private Shader shader;
     private int VAO;
     private FloatBuffer vertexBuffer;
     private IntBuffer indexBuffer;
@@ -58,10 +58,7 @@ public class HelloRectRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        program = GLUtil.createProgram(TAG, vertexShader, fragmentShader);
-        if (program == 0) {
-            return;
-        }
+        shader = Shader.createShader(TAG, vertexShader, fragmentShader);
 
         createVAO();
     }
@@ -76,8 +73,7 @@ public class HelloRectRenderer implements GLSurfaceView.Renderer {
         GLES30.glClearColor(0.2f, 0.3f, 0.3f, 1f);
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
 
-        GLES30.glUseProgram(program);
-        GLUtil.checkGlError(TAG, "glUseProgram");
+        shader.use();
         GLES30.glBindVertexArray(VAO);
         GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_INT, 0);
         GLES30.glBindVertexArray(0);
@@ -101,7 +97,7 @@ public class HelloRectRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, ebos[0]);
         GLES30.glBufferData(GLES30.GL_ELEMENT_ARRAY_BUFFER, indexes.length * 4, indexBuffer, GLES30.GL_STATIC_DRAW);
 
-        int positionHandle = GLUtil.getAttribLocation(program, "position");
+        int positionHandle = shader.getAttribLocation("position");
 
         GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 3 * 4, 0);
         GLES30.glEnableVertexAttribArray(positionHandle);
