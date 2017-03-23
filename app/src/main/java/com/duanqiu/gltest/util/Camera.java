@@ -22,23 +22,23 @@ public class Camera {
     public Vector3 right;
     public Vector3 worldUp;
     // Eular Angles
-    public float yaw = YAW;
-    public float pitch = PITCH;
+    public float yaw;
+    public float pitch;
     // Camera options
     public float movementSpeed = SPEED;
     public float movementSensitivty = SENSITIVTY;
     public float zoom = ZOOM;
 
     public Camera() {
-        postion = new Vector3(0f, 0f, 0f);
-        worldUp = new Vector3(0f, 1f, 0f);
-        updateCameraVectors();
+        this(new Vector3(0f, 0f, 0f));
+    }
+
+    public Camera(Vector3 postion) {
+        this(postion, new Vector3(0f, 1f, 0f));
     }
 
     public Camera(Vector3 postion, Vector3 worldUp) {
-        this.postion = postion;
-        this.worldUp = worldUp;
-        updateCameraVectors();
+        this(postion, worldUp, YAW, PITCH);
     }
 
     public Camera(Vector3 postion, Vector3 worldUp, float yaw, float pitch) {
