@@ -2,17 +2,13 @@ package com.duanqiu.gltest.render.start;
 
 import android.content.Context;
 import android.opengl.GLES30;
-import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
 import com.duanqiu.gltest.R;
-import com.duanqiu.gltest.glsurface.CameraSurfaceView;
-import com.duanqiu.gltest.util.Camera;
+import com.duanqiu.gltest.render.BaseCameraRenderer;
 import com.duanqiu.gltest.util.GLUtil;
-import com.duanqiu.gltest.util.LogUtil;
 import com.duanqiu.gltest.util.Shader;
-import com.duanqiu.gltest.util.Vector3;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -21,14 +17,13 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class CameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView.OnGestureListener {
-    public static final String TAG = "CoordinateRenderer2";
-    private Shader shader;
+public class CameraRenderer extends BaseCameraRenderer {
+    public static final String TAG = "CameraRenderer";
+    protected Shader shader;
     private int VAO;
     private int texture;
     private int texture2;
     private FloatBuffer vertexBuffer;
-    private Context mContext;
     private float mix = 0.2f;
 
 
@@ -111,45 +106,33 @@ public class CameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView
                     }
             };
 
-    private float[] mProjMatrix = new float[16];
-    private float[] mVMatrix = new float[16];
-    private Camera mCamera;
-
     public CameraRenderer(Context context) {
+        super(context);
+    }
+
+    @Override
+    protected void prepareVertexBuffer() {
         vertexBuffer = ByteBuffer.allocateDirect(vertices.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         vertexBuffer.put(vertices).position(0);
-
-        mContext = context;
-
-        mCamera = new Camera(new Vector3(0, 0, 3), new Vector3(0, 1, 0));
-        LogUtil.d(TAG, mCamera.toString());
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        shader = Shader.createShader(TAG, mContext, R.raw.coordinate_vert, R.raw.coordinate_frag);
+        shader = Shader.createShader(getClass().getSimpleName(), mContext, getVertexShader(), getFragmentShader());
+        super.onSurfaceCreated(gl, config);
+    }
 
-        createVAO();
-        GLES30.glEnable(GLES30.GL_DEPTH_TEST);
+    protected int getVertexShader() {
+        return R.raw.coordinate_vert;
+    }
+
+    protected int getFragmentShader() {
+        return R.raw.coordinate_frag;
     }
 
     @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
-        GLES30.glViewport(0, 0, width, height);
-        float ratio = (float) width / height;
-        Matrix.perspectiveM(mProjMatrix, 0, 45f, ratio, 0.01f, 100);
-    }
-
-    private long currentFrame = 0;
-    private long lastFrame = 0;
-    private float deltaTime = 0.0f;
-
-    @Override
-    public void onDrawFrame(GL10 gl) {
-        GLES30.glClearColor(0.2f, 0.3f, 0.3f, 1f);
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
-
+    protected void drawFrame(GL10 gl) {
         shader.use();
 
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
@@ -162,9 +145,6 @@ public class CameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView
 
         GLES30.glUniform1f(shader.getUniformLocation("mix"), mix);
 
-        currentFrame = SystemClock.uptimeMillis();
-        deltaTime = (currentFrame - lastFrame) / 1000f;
-        lastFrame = currentFrame;
         long time = SystemClock.uptimeMillis() % 4000L;
 
         mCamera.setLookAtM(mVMatrix);
@@ -191,7 +171,8 @@ public class CameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView
         GLES30.glBindVertexArray(0);
     }
 
-    private void createVAO() {
+    @Override
+    protected void createVAO() {
         int[] vaos = new int[1];
         int[] vbos = new int[1];
 
@@ -222,32 +203,5 @@ public class CameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView
 
     public void setMix(float mix) {
         this.mix = mix;
-    }
-
-    @Override
-    public void onX(boolean left) {
-        if (left) {
-            mCamera.processKeyboard(Camera.CameraMovement.LEFT, deltaTime);
-        } else {
-            mCamera.processKeyboard(Camera.CameraMovement.RIGHT, deltaTime);
-        }
-    }
-
-    @Override
-    public void onY(boolean top) {
-        if (top) {
-            mCamera.processMouseMovement(0, deltaTime * 300, true);
-        } else {
-            mCamera.processMouseMovement(0, -deltaTime * 300, true);
-        }
-    }
-
-    @Override
-    public void onZ(boolean pinchIn) {
-        if (pinchIn) {
-            mCamera.processKeyboard(Camera.CameraMovement.BACKWARD, deltaTime);
-        } else {
-            mCamera.processKeyboard(Camera.CameraMovement.FORWARD, deltaTime);
-        }
     }
 }
