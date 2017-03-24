@@ -18,6 +18,8 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
     protected float[] mProjMatrix = new float[16];
     protected float[] mVMatrix = new float[16];
     protected Camera mCamera;
+    protected int mScreenWidth;
+    protected int mScreenHeight;
 
     protected long currentFrame = 0;
     protected long lastFrame = 0;
@@ -55,8 +57,14 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES30.glViewport(0, 0, width, height);
-        float ratio = (float) width / height;
-        Matrix.perspectiveM(mProjMatrix, 0, 45f, ratio, 0.01f, 100);
+        mScreenWidth = width;
+        mScreenHeight = height;
+        perspectiveM();
+    }
+
+    protected void perspectiveM() {
+        float ratio = (float) mScreenWidth / mScreenHeight;
+        Matrix.perspectiveM(mProjMatrix, 0, mCamera.zoom, ratio, 0.01f, 100);
     }
 
     protected void clearBackground() {
@@ -72,52 +80,24 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
         currentFrame = SystemClock.uptimeMillis();
         deltaTime = (currentFrame - lastFrame) / 1000f;
         lastFrame = currentFrame;
-
+        perspectiveM();
         drawFrame(gl);
     }
 
     protected abstract void createVAO();
 
-//    @Override
-//    public void onX(boolean left) {
-//        if (left) {
-//            mCamera.processKeyboard(Camera.CameraMovement.LEFT, deltaTime);
-//        } else {
-//            mCamera.processKeyboard(Camera.CameraMovement.RIGHT, deltaTime);
-//        }
-//    }
-//
-//    @Override
-//    public void onY(boolean top) {
-//        if (top) {
-//            mCamera.processMouseMovement(0, deltaTime * 300, true);
-//        } else {
-//            mCamera.processMouseMovement(0, -deltaTime * 300, true);
-//        }
-//    }
-//
-//    @Override
-//    public void onZ(boolean pinchIn) {
-//        if (pinchIn) {
-//            mCamera.processKeyboard(Camera.CameraMovement.BACKWARD, deltaTime);
-//        } else {
-//            mCamera.processKeyboard(Camera.CameraMovement.FORWARD, deltaTime);
-//        }
-//    }
-
-
     @Override
     public void processKeyboard(Camera.CameraMovement direction) {
-
+        mCamera.processKeyboard(direction, deltaTime);
     }
 
     @Override
     public void processMouseMovement(float right, float up) {
-
+        mCamera.processMouseMovement(right, up, true);
     }
 
     @Override
     public void processMouseScroll(float up) {
-
+        mCamera.processMouseScroll(up / 100);
     }
 }

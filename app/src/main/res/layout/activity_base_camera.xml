@@ -13,31 +13,45 @@
         android:id="@+id/camera_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#22000000"
         android:orientation="horizontal">
 
         <com.duanqiu.gltest.widget.CameraProcessView
             android:id="@+id/keyboard"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Keyboard" />
+            android:text="Keyboard"
+            android:textColor="@android:color/white" />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
 
         <com.duanqiu.gltest.widget.CameraProcessView
             android:id="@+id/mouse_movement"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="MouseMovement" />
+            android:text="MouseMovement"
+            android:textColor="@android:color/white" />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
 
         <com.duanqiu.gltest.widget.CameraProcessView
             android:id="@+id/mouse_scroll"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="MouseScroll" />
+            android:text="MouseScroll"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
 

@@ -148,7 +148,6 @@ public class CameraRenderer extends BaseCameraRenderer {
         long time = SystemClock.uptimeMillis() % 4000L;
 
         mCamera.setLookAtM(mVMatrix);
-
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("view"), 1, false, mVMatrix, 0);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
 

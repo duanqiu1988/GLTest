@@ -39,8 +39,22 @@ public class CameraSurfaceFrameLayout extends FrameLayout {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        glSurfaceView.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        cameraLayout.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec((int) (width / 3.0f + 0.5f), MeasureSpec.EXACTLY));
+        setMeasuredDimension(width, height);
+    }
+
+    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
+        glSurfaceView.layout(left, top, right, bottom);
+        int width = getMeasuredWidth();
+        int height = getMeasuredHeight();
+        cameraLayout.layout(left, height - width / 3, right, bottom);
     }
 
     public void setRenderer(GLSurfaceView.Renderer renderer) {
