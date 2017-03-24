@@ -83,6 +83,7 @@ public class BasicLightRenderer extends BaseLightingRenderer {
         GLES30.glUniform3f(shader.getUniformLocation("objectColor"), 1.0f, 0.5f, 0.31f);
         GLES30.glUniform3f(shader.getUniformLocation("lightColor"), 1.0f, 1.0f, 1.0f);
         GLES30.glUniform3f(shader.getUniformLocation("lightPos"), lightPos.x, lightPos.y, lightPos.z);
+        GLES30.glUniform3f(shader.getUniformLocation("viewPos"), mCamera.postion.x, mCamera.postion.y, mCamera.postion.z);
 
         mCamera.setLookAtM(mVMatrix);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("view"), 1, false, mVMatrix, 0);

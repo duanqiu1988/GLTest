@@ -6,14 +6,13 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
-import com.duanqiu.gltest.glsurface.CameraSurfaceView;
 import com.duanqiu.gltest.util.Camera;
 import com.duanqiu.gltest.util.Vector3;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, CameraSurfaceView.OnGestureListener {
+public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Camera.CameraProcessListener {
     public static final String TAG = "BaseCameraRenderer";
     protected Context mContext;
     protected float[] mProjMatrix = new float[16];
@@ -79,30 +78,46 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
 
     protected abstract void createVAO();
 
+//    @Override
+//    public void onX(boolean left) {
+//        if (left) {
+//            mCamera.processKeyboard(Camera.CameraMovement.LEFT, deltaTime);
+//        } else {
+//            mCamera.processKeyboard(Camera.CameraMovement.RIGHT, deltaTime);
+//        }
+//    }
+//
+//    @Override
+//    public void onY(boolean top) {
+//        if (top) {
+//            mCamera.processMouseMovement(0, deltaTime * 300, true);
+//        } else {
+//            mCamera.processMouseMovement(0, -deltaTime * 300, true);
+//        }
+//    }
+//
+//    @Override
+//    public void onZ(boolean pinchIn) {
+//        if (pinchIn) {
+//            mCamera.processKeyboard(Camera.CameraMovement.BACKWARD, deltaTime);
+//        } else {
+//            mCamera.processKeyboard(Camera.CameraMovement.FORWARD, deltaTime);
+//        }
+//    }
+
+
     @Override
-    public void onX(boolean left) {
-        if (left) {
-            mCamera.processKeyboard(Camera.CameraMovement.LEFT, deltaTime);
-        } else {
-            mCamera.processKeyboard(Camera.CameraMovement.RIGHT, deltaTime);
-        }
+    public void processKeyboard(Camera.CameraMovement direction) {
+
     }
 
     @Override
-    public void onY(boolean top) {
-        if (top) {
-            mCamera.processMouseMovement(0, deltaTime * 300, true);
-        } else {
-            mCamera.processMouseMovement(0, -deltaTime * 300, true);
-        }
+    public void processMouseMovement(float right, float up) {
+
     }
 
     @Override
-    public void onZ(boolean pinchIn) {
-        if (pinchIn) {
-            mCamera.processKeyboard(Camera.CameraMovement.BACKWARD, deltaTime);
-        } else {
-            mCamera.processKeyboard(Camera.CameraMovement.FORWARD, deltaTime);
-        }
+    public void processMouseScroll(float up) {
+
     }
 }

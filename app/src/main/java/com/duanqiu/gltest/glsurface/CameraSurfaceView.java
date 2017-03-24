@@ -96,7 +96,7 @@ public class CameraSurfaceView extends GLSurfaceView implements ScaleGestureDete
         onScale = false;
     }
 
-    public static interface OnGestureListener {
+    public interface OnGestureListener {
         void onX(boolean left);
 
         void onY(boolean top);

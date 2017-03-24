@@ -126,4 +126,12 @@ public class Camera {
     public enum CameraMovement {
         FORWARD, BACKWARD, RIGHT, LEFT
     }
+
+    public interface CameraProcessListener {
+        void processKeyboard(CameraMovement direction);
+
+        void processMouseMovement(float right, float up);
+
+        void processMouseScroll(float up);
+    }
 }
