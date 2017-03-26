@@ -86,6 +86,10 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
 
     protected abstract void createVAO();
 
+    protected int getTime(){
+        return (int) (SystemClock.uptimeMillis() % 4000L * 0.09f);
+    }
+
     @Override
     public void processKeyboard(Camera.CameraMovement direction) {
         mCamera.processKeyboard(direction, deltaTime);
