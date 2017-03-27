@@ -74,6 +74,9 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
 
     protected abstract void drawFrame(GL10 gl);
 
+    double radian = 0f;
+    float n = 8f;
+
     @Override
     public void onDrawFrame(GL10 gl) {
         clearBackground();
@@ -86,8 +89,8 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
 
     protected abstract void createVAO();
 
-    protected int getTime(){
-        return (int) (SystemClock.uptimeMillis() % 4000L * 0.09f);
+    protected double getRadian() {
+        return radian = (radian + 2 * Math.PI / 60 / n) % (2 * Math.PI);
     }
 
     @Override

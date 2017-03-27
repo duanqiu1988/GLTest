@@ -10,7 +10,7 @@ import com.duanqiu.gltest.util.Vector3;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MaterialRenderer extends BaseLightingRenderer {
-    public static final String TAG = "BasicLightRenderer";
+    public static final String TAG = "MaterialRenderer";
 
     private float[] vertices = {
             // position          // normal
@@ -88,10 +88,10 @@ public class MaterialRenderer extends BaseLightingRenderer {
         GLES30.glUniform3f(shader.getUniformLocation("light.position"), lightPos.x, lightPos.y, lightPos.z);
         GLES30.glUniform3f(shader.getUniformLocation("viewPos"), mCamera.postion.x, mCamera.postion.y, mCamera.postion.z);
 
-        int time = getTime();
-        lightColor.x = (float) Math.sin(time * 2.0f);
-        lightColor.y = (float) Math.sin(time * 0.7f);
-        lightColor.z = (float) Math.sin(time * 1.3f);
+        double radian = getRadian();
+        lightColor.x = (float) Math.sin(radian * 2.0f);
+        lightColor.y = (float) Math.sin(radian * 0.7f);
+        lightColor.z = (float) Math.sin(radian * 1.3f);
 
         lightDiffuse = lightColor.scale(0.5f); // Decrease the influence
         lightAmbient = lightDiffuse.scale(0.2f); // Low influence
@@ -102,7 +102,7 @@ public class MaterialRenderer extends BaseLightingRenderer {
         GLES30.glUniform3f(shader.getUniformLocation("material.ambient"), 1.0f, 0.5f, 0.31f);
         GLES30.glUniform3f(shader.getUniformLocation("material.diffuse"), 1.0f, 0.5f, 0.31f);
         GLES30.glUniform3f(shader.getUniformLocation("material.specular"), 0.5f, 0.5f, 0.5f); // Specular doesn't have full effect on this object's material
-        GLES30.glUniform1f(shader.getUniformLocation("material.shininess"), 32.0f);
+        GLES30.glUniform1f(shader.getUniformLocation("material.shininess"), 64.0f);
 
         mCamera.setLookAtM(mVMatrix);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("view"), 1, false, mVMatrix, 0);
