@@ -109,4 +109,8 @@ public class Vector3 {
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }
+
+    public static Vector3 newInstance(Vector3 vector3) {
+        return new Vector3(vector3.x, vector3.y, vector3.z);
+    }
 }

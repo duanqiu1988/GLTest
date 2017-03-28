@@ -5,13 +5,20 @@ import android.opengl.GLES30;
 import android.opengl.Matrix;
 
 import com.duanqiu.gltest.R;
+import com.duanqiu.gltest.util.DirectionalLight;
 import com.duanqiu.gltest.util.GLUtil;
+import com.duanqiu.gltest.util.PointLight;
+import com.duanqiu.gltest.util.SpotLight;
+import com.duanqiu.gltest.util.Vector3;
 
 import javax.microedition.khronos.opengles.GL10;
 
-public class SmoothSpotLightRenderer extends BaseLightingRenderer {
+public class MultiLightRenderer extends BaseLightingRenderer {
     private int woodTexture;
     private int steelTexture;
+    private DirectionalLight dirLight;
+    private PointLight[] pointLights;
+    private SpotLight spotLight;
 
     private float[] vertices = {
             // Positions          // Normals           // Texture Coords
@@ -58,18 +65,47 @@ public class SmoothSpotLightRenderer extends BaseLightingRenderer {
             -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
     };
 
-    public SmoothSpotLightRenderer(Context context) {
+    private Vector3[] pointLightPosition = {
+            new Vector3(0.7f, 0.2f, 2.0f),
+            new Vector3(2.3f, -3.3f, -4.0f),
+            new Vector3(-4.0f, 2.0f, -12.0f),
+            new Vector3(0.0f, 0.0f, -3.0f)
+    };
+
+    private Vector3[] pointLightColors = {
+            new Vector3(1.0f, 0.6f, 0.0f),
+            new Vector3(1.0f, 0.0f, 0.0f),
+            new Vector3(1.0f, 1.0f, 0.0f),
+            new Vector3(0.2f, 0.2f, 1.0f)
+    };
+
+    public MultiLightRenderer(Context context) {
         super(context);
+
+        dirLight = new DirectionalLight(new Vector3(0.3f, 0.24f, 0.14f), new Vector3(0.7f, 0.42f, 0.26f),
+                new Vector3(0.5f, 0.5f, 0.5f), new Vector3(-0.2f, -1.0f, -0.3f));
+        pointLights = new PointLight[4];
+        pointLights[0] = new PointLight(pointLightColors[0].scale(0.1f), pointLightColors[0], pointLightColors[0],
+                pointLightPosition[0], 1.0f, 0.09f, 0.32f);
+        pointLights[1] = new PointLight(pointLightColors[1].scale(0.1f), pointLightColors[1], pointLightColors[1],
+                pointLightPosition[1], 1.0f, 0.09f, 0.32f);
+        pointLights[2] = new PointLight(pointLightColors[2].scale(0.1f), pointLightColors[2], pointLightColors[2],
+                pointLightPosition[2], 1.0f, 0.09f, 0.32f);
+        pointLights[3] = new PointLight(pointLightColors[3].scale(0.1f), pointLightColors[3], pointLightColors[3],
+                pointLightPosition[3], 1.0f, 0.09f, 0.32f);
+        spotLight = new SpotLight(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.8f, 0.8f, 0.0f), new Vector3(0.8f, 0.8f, 0.0f),
+                mCamera.postion, mCamera.front, 1.0f, 0.09f, 0.32f,
+                (float) Math.cos(Math.toRadians(12.5f)), (float) Math.cos(Math.toRadians(13.0f)));
     }
 
     @Override
     protected int getVertexShader() {
-        return R.raw.smooth_spot_light_vert;
+        return R.raw.multi_light_vert;
     }
 
     @Override
     protected int getFragmentShader() {
-        return R.raw.smooth_spot_light_frag;
+        return R.raw.multi_light_frag;
     }
 
     @Override
@@ -81,19 +117,44 @@ public class SmoothSpotLightRenderer extends BaseLightingRenderer {
     protected void drawObject(GL10 gl) {
         // draw VAO
         shader.use();
-        GLES30.glUniform3f(shader.getUniformLocation("light.position"), lightPos.x, lightPos.y, lightPos.z);
-        GLES30.glUniform3f(shader.getUniformLocation("light.direction"), mCamera.front.x,  mCamera.front.y,  mCamera.front.z);
-        GLES30.glUniform1f(shader.getUniformLocation("light.cutOff"), (float) Math.cos(Math.toRadians(12.5f)));
-        GLES30.glUniform1f(shader.getUniformLocation("light.outerCutOff"), (float) Math.cos(Math.toRadians(17.5f)));
+
+        // viewPos
         GLES30.glUniform3f(shader.getUniformLocation("viewPos"), mCamera.postion.x, mCamera.postion.y, mCamera.postion.z);
 
-        GLES30.glUniform3f(shader.getUniformLocation("light.ambient"), 0.2f, 0.2f, 0.2f);
-        GLES30.glUniform3f(shader.getUniformLocation("light.diffuse"), 0.5f, 0.5f, 0.5f);
-        GLES30.glUniform3f(shader.getUniformLocation("light.specular"), 1.0f, 1.0f, 1.0f);
-        GLES30.glUniform1f(shader.getUniformLocation("light.constant"), 1.0f);
-        GLES30.glUniform1f(shader.getUniformLocation("light.linear"), 0.09f);
-        GLES30.glUniform1f(shader.getUniformLocation("light.quadratic"), 0.032f);
+        // Directional Light
+        GLES30.glUniform3f(shader.getUniformLocation("dirLight.ambient"), dirLight.ambient.x, dirLight.ambient.y, dirLight.ambient.z);
+        GLES30.glUniform3f(shader.getUniformLocation("dirLight.diffuse"), dirLight.diffuse.x, dirLight.diffuse.y, dirLight.diffuse.z);
+        GLES30.glUniform3f(shader.getUniformLocation("dirLight.specular"), dirLight.specular.x, dirLight.specular.y, dirLight.specular.z);
+        GLES30.glUniform3f(shader.getUniformLocation("dirLight.direction"), dirLight.direction.x, dirLight.direction.y, dirLight.direction.z);
 
+        // Point Light
+        for (int i = 0; i < pointLights.length; i++) {
+            StringBuilder location = new StringBuilder("pointLights[");
+            location.append(i).append("].");
+            GLES30.glUniform3f(shader.getUniformLocation(location.toString() + "ambient"), pointLights[i].ambient.x, pointLights[i].ambient.y, pointLights[i].ambient.z);
+            GLES30.glUniform3f(shader.getUniformLocation(location.toString() + "diffuse"), pointLights[i].diffuse.x, pointLights[i].diffuse.y, pointLights[i].diffuse.z);
+            GLES30.glUniform3f(shader.getUniformLocation(location.toString() + "specular"), pointLights[i].specular.x, pointLights[i].specular.y, pointLights[i].specular.z);
+            GLES30.glUniform3f(shader.getUniformLocation(location.toString() + "position"), pointLights[i].position.x, pointLights[i].position.y, pointLights[i].position.z);
+            GLES30.glUniform1f(shader.getUniformLocation(location.toString() + "constant"), pointLights[i].constant);
+            GLES30.glUniform1f(shader.getUniformLocation(location.toString() + "linear"), pointLights[i].linear);
+            GLES30.glUniform1f(shader.getUniformLocation(location.toString() + "quadratic"), pointLights[i].quadratic);
+        }
+
+        // Spot Light
+        GLES30.glUniform3f(shader.getUniformLocation("spotLight.ambient"), spotLight.ambient.x, spotLight.ambient.y, spotLight.ambient.z);
+        GLES30.glUniform3f(shader.getUniformLocation("spotLight.diffuse"), spotLight.diffuse.x, spotLight.diffuse.y, spotLight.diffuse.z);
+        GLES30.glUniform3f(shader.getUniformLocation("spotLight.specular"), spotLight.specular.x, spotLight.specular.y, spotLight.specular.z);
+        GLES30.glUniform3f(shader.getUniformLocation("spotLight.direction"), spotLight.direction.x, spotLight.direction.y, spotLight.direction.z);
+        GLES30.glUniform3f(shader.getUniformLocation("spotLight.position"), spotLight.position.x, spotLight.position.y, spotLight.position.z);
+
+        GLES30.glUniform1f(shader.getUniformLocation("spotLight.cutOff"), spotLight.cutOff);
+        GLES30.glUniform1f(shader.getUniformLocation("spotLight.outerCutOff"), spotLight.outerCutOff);
+        GLES30.glUniform1f(shader.getUniformLocation("spotLight.constant"), spotLight.constant);
+        GLES30.glUniform1f(shader.getUniformLocation("spotLight.linear"), spotLight.linear);
+        GLES30.glUniform1f(shader.getUniformLocation("spotLight.quadratic"), spotLight.quadratic);
+
+
+        // Material
         GLES30.glUniform1f(shader.getUniformLocation("material.shininess"), 64.0f);
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, woodTexture);
@@ -118,6 +179,24 @@ public class SmoothSpotLightRenderer extends BaseLightingRenderer {
             GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
             GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
         }
+    }
+
+    @Override
+    protected void drawLamb(GL10 gl) {
+        // draw lambVAO
+        lambShader.use();
+        GLES30.glUniformMatrix4fv(lambShader.getUniformLocation("view"), 1, false, mVMatrix, 0);
+        GLES30.glUniformMatrix4fv(lambShader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
+        GLES30.glBindVertexArray(lambVAO);
+
+        for (int i = 0; i < 4;i++){
+            float[] mMMatrix = getUnitMatrix4f();
+            Matrix.translateM(mMMatrix, 0, pointLights[i].position.x, pointLights[i].position.y, pointLights[i].position.z);
+            Matrix.scaleM(mMMatrix, 0, 0.2f, 0.2f, 0.2f);
+            GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+            GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
+        }
+        GLES30.glBindVertexArray(0);
     }
 
     @Override
