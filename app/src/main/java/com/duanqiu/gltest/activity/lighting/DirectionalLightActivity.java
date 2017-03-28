@@ -4,9 +4,9 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
 import com.duanqiu.gltest.BaseCameraActivity;
-import com.duanqiu.gltest.render.lighting.LightCastRenderer;
+import com.duanqiu.gltest.render.lighting.DirectionalLightRenderer;
 
-public class LightCastActivity extends BaseCameraActivity {
+public class DirectionalLightActivity extends BaseCameraActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,6 +15,6 @@ public class LightCastActivity extends BaseCameraActivity {
 
     @Override
     protected GLSurfaceView.Renderer getRenderer() {
-        return new LightCastRenderer(this);
+        return new DirectionalLightRenderer(this);
     }
 }

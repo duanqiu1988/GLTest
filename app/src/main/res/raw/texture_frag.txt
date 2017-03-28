@@ -1,0 +1,8 @@
+varying vec2 TexCoord;
+varying vec3 outColor;
+uniform sampler2D outTexture;
+uniform sampler2D outTexture2;
+uniform float mix;
+void main() {
+    gl_FragColor = mix(texture2D(outTexture, TexCoord), texture2D(outTexture2, TexCoord), mix) * vec4(outColor, 1);
+    }

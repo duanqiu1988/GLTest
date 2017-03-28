@@ -2,14 +2,14 @@ package com.duanqiu.gltest.render.lighting;
 
 import android.content.Context;
 import android.opengl.GLES30;
+import android.opengl.Matrix;
 
 import com.duanqiu.gltest.R;
 import com.duanqiu.gltest.util.GLUtil;
 
 import javax.microedition.khronos.opengles.GL10;
 
-public class LightMapRenderer extends BaseLightingRenderer {
-    public static final String TAG = "LightMapRenderer";
+public class DirectionalLightRenderer extends BaseLightingRenderer {
     private int woodTexture;
     private int steelTexture;
 
@@ -58,19 +58,18 @@ public class LightMapRenderer extends BaseLightingRenderer {
             -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
     };
 
-    public LightMapRenderer(Context context) {
+    public DirectionalLightRenderer(Context context) {
         super(context);
     }
 
-
     @Override
     protected int getVertexShader() {
-        return R.raw.light_map_vert;
+        return R.raw.directional_light_vert;
     }
 
     @Override
     protected int getFragmentShader() {
-        return R.raw.light_map_frag;
+        return R.raw.directional_light_frag;
     }
 
     @Override
@@ -82,7 +81,7 @@ public class LightMapRenderer extends BaseLightingRenderer {
     protected void drawObject(GL10 gl) {
         // draw VAO
         shader.use();
-        GLES30.glUniform3f(shader.getUniformLocation("light.position"), lightPos.x, lightPos.y, lightPos.z);
+        GLES30.glUniform3f(shader.getUniformLocation("light.direction"), -0.2f, -1.0f, -0.3f);
         GLES30.glUniform3f(shader.getUniformLocation("viewPos"), mCamera.postion.x, mCamera.postion.y, mCamera.postion.z);
 
         GLES30.glUniform3f(shader.getUniformLocation("light.ambient"), 0.2f, 0.2f, 0.2f);
@@ -101,11 +100,23 @@ public class LightMapRenderer extends BaseLightingRenderer {
         mCamera.setLookAtM(mVMatrix);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("view"), 1, false, mVMatrix, 0);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
-        float[] mMMatrix = getUnitMatrix4f();
-        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
 
         GLES30.glBindVertexArray(VAO);
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
+        for (int i = 0; i < 10; i++) {
+            float[] mMMatrix = getUnitMatrix4f();
+
+            float angle = i * 20;
+            Matrix.setRotateM(mMMatrix, 0, angle, 1.0f, 0.3f, 0.5f);
+            Matrix.translateM(mMMatrix, 0, cubePositions[i][0], cubePositions[i][1], cubePositions[i][2]);
+
+            GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+            GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
+        }
+    }
+
+    @Override
+    protected void drawLamb(GL10 gl) {
+        GLES30.glBindVertexArray(0);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.duanqiu.gltest.render.lighting;
 
 import android.content.Context;
 import android.opengl.GLES30;
-import android.opengl.Matrix;
 
 import com.duanqiu.gltest.R;
 import com.duanqiu.gltest.util.Vector3;
@@ -82,7 +81,7 @@ public class MaterialRenderer extends BaseLightingRenderer {
     Vector3 lightDiffuse;
 
     @Override
-    protected void drawFrame(GL10 gl) {
+    protected void drawObject(GL10 gl) {
         // draw VAO
         shader.use();
         GLES30.glUniform3f(shader.getUniformLocation("light.position"), lightPos.x, lightPos.y, lightPos.z);
@@ -112,19 +111,6 @@ public class MaterialRenderer extends BaseLightingRenderer {
 
         GLES30.glBindVertexArray(VAO);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
-
-        // draw lambVAO
-        lambShader.use();
-        GLES30.glUniformMatrix4fv(lambShader.getUniformLocation("view"), 1, false, mVMatrix, 0);
-        GLES30.glUniformMatrix4fv(lambShader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
-        mMMatrix = getUnitMatrix4f();
-        Matrix.translateM(mMMatrix, 0, lightPos.x, lightPos.y, lightPos.z);
-        Matrix.scaleM(mMMatrix, 0, 0.2f, 0.2f, 0.2f);
-        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
-
-        GLES30.glBindVertexArray(lambVAO);
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
-        GLES30.glBindVertexArray(0);
     }
 
     @Override
