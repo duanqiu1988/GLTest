@@ -45,6 +45,9 @@ public class CameraProcessView extends TextView {
                         if (mMouseMovementListener != null) {
                             mMouseMovementListener.processMouseMovement(-(++count * INTERVAL), 0);
                         }
+                        if (mMouseScrollListener != null) {
+                            mMouseScrollListener.processMouseScroll(++count * INTERVAL);
+                        }
                         break;
                     case UP:
                         if (mKeyboardListener != null) {
@@ -53,8 +56,9 @@ public class CameraProcessView extends TextView {
                         if (mMouseMovementListener != null) {
                             mMouseMovementListener.processMouseMovement(0, ++count * INTERVAL);
                         }
+                        // temporary approach
                         if (mMouseScrollListener != null) {
-                            mMouseScrollListener.processMouseScroll(++count * INTERVAL);
+                            mMouseScrollListener.processKeyboard(Camera.CameraMovement.UP);
                         }
                         break;
                     case RIGHT:
@@ -64,6 +68,9 @@ public class CameraProcessView extends TextView {
                         if (mMouseMovementListener != null) {
                             mMouseMovementListener.processMouseMovement(++count * INTERVAL, 0);
                         }
+                        if (mMouseScrollListener != null) {
+                            mMouseScrollListener.processMouseScroll(-++count * INTERVAL);
+                        }
                         break;
                     case DOWN:
                         if (mKeyboardListener != null) {
@@ -72,8 +79,9 @@ public class CameraProcessView extends TextView {
                         if (mMouseMovementListener != null) {
                             mMouseMovementListener.processMouseMovement(0, -++count * INTERVAL);
                         }
+                        // temporary approach
                         if (mMouseScrollListener != null) {
-                            mMouseScrollListener.processMouseScroll(-++count * INTERVAL);
+                            mMouseScrollListener.processKeyboard(Camera.CameraMovement.DOWN);
                         }
                         break;
                 }

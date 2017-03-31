@@ -74,6 +74,14 @@ public class Camera {
         if (direction == CameraMovement.RIGHT) {
             postion.addition(Vector3.scale(right, velocity));
         }
+
+        if (direction == CameraMovement.UP) {
+            postion.addition(Vector3.scale(up, velocity));
+        }
+
+        if (direction == CameraMovement.DOWN) {
+            postion.subtraction(Vector3.scale(up, velocity));
+        }
     }
 
     public void processMouseMovement(float xOff, float yOff, boolean constrainPitch) {
@@ -124,7 +132,7 @@ public class Camera {
     }
 
     public enum CameraMovement {
-        FORWARD, BACKWARD, RIGHT, LEFT
+        FORWARD, BACKWARD, RIGHT, LEFT, UP, DOWN
     }
 
     public interface CameraProcessListener {

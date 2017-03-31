@@ -2,13 +2,14 @@ package com.duanqiu.gltest.render.advanced;
 
 import android.content.Context;
 import android.opengl.GLES30;
-import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
 import com.duanqiu.gltest.R;
+import com.duanqiu.gltest.render.BaseCameraRenderer;
+import com.duanqiu.gltest.util.Camera;
 import com.duanqiu.gltest.util.GLUtil;
-import com.duanqiu.gltest.util.LogUtil;
 import com.duanqiu.gltest.util.Shader;
+import com.duanqiu.gltest.util.Vector3;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -17,219 +18,179 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-/**
- * Created by 俊杰 on 2017/3/14.
- */
-
-public class DepthTestRenderer implements GLSurfaceView.Renderer {
+public class DepthTestRenderer extends BaseCameraRenderer {
     public static final String TAG = "DepthTestRenderer";
-    private Shader shader;
-    private Shader screenShader;
-    private int VAO;
-    private int screenVAO;
-    private int texture;
-    private int texture2;
-    private FloatBuffer vertexBuffer;
-    private FloatBuffer screenVertexBuffer;
-    private Context mContext;
-    private float mix = 0.2f;
-    private int FBO;
-    private int textureColorBuffer;
-    private int mScreenWidth;
-    private int mScreenHeight;
-    private final float[] vertexes = {
-            // Positions     Texture Coordinates
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,  // bottom left
-            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,    // top left
-            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,   // bottom right
-            0.5f, 0.5f, 0.0f, 1.0f, 1.0f   // top right
+    protected FloatBuffer cubeBuffer;
+    protected FloatBuffer planeBuffer;
+    protected Shader shader;
+    protected int cubeVAO;
+    protected int planeVAO;
+    private int cubeTexture;
+    private int planeTexture;
+
+    private float[] cubeVertices = {
+            // Positions       // Texture Coords
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+
+            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
     };
 
-    private final float[] screenVertexes = {
-            // Positions     Texture Coordinates
-            -1f, -1f, 0.0f, 0.0f, 0.0f,  // bottom left
-            -1f, 1f, 0.0f, 0.0f, 1.0f,    // top left
-            1f, -1f, 0.0f, 1.0f, 0.0f,   // bottom right
-            1f, 1f, 0.0f, 1.0f, 1.0f   // top right
-    };
+    private float[] planeVertices = {
+            5.0f, -0.5f, 5.0f, 2.0f, 0.0f,
+            -5.0f, -0.5f, 5.0f, 0.0f, 0.0f,
+            -5.0f, -0.5f, -5.0f, 0.0f, 2.0f,
 
-    private float[] mProjMatrix = new float[16];
-    private float[] mMMatrix = new float[16];
-    private float[] mVMatrix = new float[16];
+            5.0f, -0.5f, 5.0f, 2.0f, 0.0f,
+            -5.0f, -0.5f, -5.0f, 0.0f, 2.0f,
+            5.0f, -0.5f, -5.0f, 2.0f, 2.0f
+    };
 
     public DepthTestRenderer(Context context) {
-        vertexBuffer = ByteBuffer.allocateDirect(vertexes.length * 4)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        vertexBuffer.put(vertexes).position(0);
+        super(context);
+    }
 
-        screenVertexBuffer = ByteBuffer.allocateDirect(screenVertexes.length * 4)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        screenVertexBuffer.put(screenVertexes).position(0);
+    @Override
+    protected void initCamera() {
+        mCamera = new Camera(new Vector3(0, 1, 3));
+    }
 
-        mContext = context;
+    @Override
+    protected void prepareVertexBuffer() {
+        cubeBuffer = ByteBuffer.allocateDirect(cubeVertices.length * 4)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        cubeBuffer.put(cubeVertices).position(0);
+
+        planeBuffer = ByteBuffer.allocateDirect(planeVertices.length * 4)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        planeBuffer.put(planeVertices).position(0);
+    }
+
+    @Override
+    protected void drawFrame(GL10 gl) {
+        shader.use();
+        mCamera.setLookAtM(mVMatrix);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("view"), 1, false, mVMatrix, 0);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
+
+        // draw cube
+        GLES30.glBindVertexArray(cubeVAO);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, cubeTexture);
+        // first cube
+        float[] mMMatrix = getUnitMatrix4f();
+        Matrix.translateM(mMMatrix, 0, -1.0f, 0.0f, -1.0f);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
+        // second cube
+        mMMatrix = getUnitMatrix4f();
+        Matrix.translateM(mMMatrix, 0, 2.0f, 0.0f, 0.0f);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
+
+        // draw plane
+        GLES30.glBindVertexArray(planeVAO);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, planeTexture);
+        mMMatrix = getUnitMatrix4f();
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6);
+        GLES30.glBindVertexArray(0);
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        LogUtil.d(TAG, "onSurfaceCreated");
-        shader = Shader.createShader(TAG, mContext, R.raw.fbo_vert, R.raw.fbo_frag);
-        screenShader = Shader.createShader(TAG, mContext, R.raw.fbo_screen_vert, R.raw.fbo_screen_frag);
+        shader = Shader.createShader(getClass().getSimpleName(), mContext, getVertexShader(), getFragmentShader());
+        super.onSurfaceCreated(gl, config);
+        GLES30.glDepthFunc(GLES30.GL_LESS);
+    }
 
-        Matrix.setLookAtM(mVMatrix, 0, 0, 0, -5, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+    protected int getVertexShader() {
+        return R.raw.depth_test_vert;
+    }
+
+    protected int getFragmentShader() {
+        return R.raw.depth_test_frag;
     }
 
     @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
-        mScreenWidth = width;
-        mScreenHeight = height;
-        LogUtil.d(TAG, "onSurfaceChanged width: " + width + ", height: " + height + ", screenWidth: " + mScreenWidth + ", screenHeight: " + mScreenHeight);
-        createVAO();
-        createScreenVAO();
-        createFBO();
-        GLES30.glViewport(0, 0, width, height);
-        float ratio = (float) width / height;
-        Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
-    }
+    protected void createVAO() {
+        int[] vaos = new int[2];
+        int[] vbos = new int[2];
 
-    @Override
-    public void onDrawFrame(GL10 gl) {
+        GLES30.glGenVertexArrays(2, vaos, 0);
+        GLES30.glGenBuffers(2, vbos, 0);
 
-        /********************************** draw fbo **********************************/
-        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, FBO);
-        GLES30.glClearColor(1f, 0.5f, 0.1f, 0.1f);
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
+        // bind cubeVAO
+        cubeVAO = vaos[0];
+        int vbo = vbos[0];
 
-        shader.use();
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo);
+        GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, cubeVertices.length * 4, cubeBuffer, GLES30.GL_STATIC_DRAW);
 
-        GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture);
-        GLES30.glUniform1i(shader.getUniformLocation("outTexture"), 0);
-
-//        GLES30.glActiveTexture(GLES30.GL_TEXTURE1);
-//        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture2);
-//        GLES30.glUniform1i(GLES30.glGetUniformLocation(program, "outTexture2"), 1);
-
-        Matrix.setRotateM(mMMatrix, 0, 45, 1, 0, 0);
-
-        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
-        GLES30.glUniformMatrix4fv(shader.getUniformLocation("view"), 1, false, mVMatrix, 0);
-        GLES30.glUniformMatrix4fv(shader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
-
-        GLES30.glBindVertexArray(VAO);
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
-        GLES30.glBindVertexArray(0);
-
-        /********************************** draw screen from fbo ************************************/
-
-        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
-        GLES30.glClearColor(1f, 1f, 1f, 1f);
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
-
-        screenShader.use();
-        GLES30.glBindVertexArray(screenVAO);
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureColorBuffer);
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
-        GLES30.glBindVertexArray(0);
-    }
-
-    private void createVAO() {
-        int[] vaos = new int[1];
-        int[] vbos = new int[1];
-
-        GLES30.glGenVertexArrays(1, vaos, 0);
-        GLES30.glGenBuffers(1, vbos, 0);
-
-        VAO = vaos[0];
-        GLES30.glBindVertexArray(VAO);
-
-        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vaos[0]);
-        GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, vertexes.length * 4, vertexBuffer, GLES30.GL_STATIC_DRAW);
-
-
+        GLES30.glBindVertexArray(cubeVAO);
         int positionHandle = shader.getAttribLocation("position");
-        int coordHandle = shader.getAttribLocation("texCoord");
-
         GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
+        int texCoordHandle = shader.getAttribLocation("texCoord");
+        GLES30.glVertexAttribPointer(texCoordHandle, 2, GLES30.GL_FLOAT, false, 5 * 4, 3 * 4);
+
         GLES30.glEnableVertexAttribArray(positionHandle);
-
-        GLES30.glVertexAttribPointer(coordHandle, 2, GLES30.GL_FLOAT, false, 5 * 4, 3 * 4);
-        GLES30.glEnableVertexAttribArray(coordHandle);
-
+        GLES30.glEnableVertexAttribArray(texCoordHandle);
         GLES30.glBindVertexArray(0);
 
+        // bind planeVAO
+        planeVAO = vaos[1];
+        vbo = vbos[1];
 
-        // texture
-        texture = GLUtil.bindTexture2D(mContext, R.raw.container);
-        texture2 = GLUtil.bindTexture2D(mContext, R.raw.awesomeface);
-        LogUtil.d(TAG, "texture: " + texture + ", texture2: " + texture2);
-    }
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo);
+        GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, planeVertices.length * 4, planeBuffer, GLES30.GL_STATIC_DRAW);
 
-    private void createScreenVAO() {
-        int[] vaos = new int[1];
-        int[] vbos = new int[1];
-
-        GLES30.glGenVertexArrays(1, vaos, 0);
-        GLES30.glGenBuffers(1, vbos, 0);
-
-        screenVAO = vaos[0];
-        GLES30.glBindVertexArray(screenVAO);
-        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbos[0]);
-        GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, screenVertexes.length * 4, screenVertexBuffer, GLES30.GL_STATIC_DRAW);
-
-        int positionHandle = screenShader.getAttribLocation("position");
-        int coordHandle = screenShader.getAttribLocation("texCoord");
-
+        GLES30.glBindVertexArray(planeVAO);
+        positionHandle = shader.getAttribLocation("position");
         GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
+        texCoordHandle = shader.getAttribLocation("texCoord");
+        GLES30.glVertexAttribPointer(texCoordHandle, 2, GLES30.GL_FLOAT, false, 5 * 4, 3 * 4);
+
         GLES30.glEnableVertexAttribArray(positionHandle);
-        GLES30.glVertexAttribPointer(coordHandle, 2, GLES30.GL_FLOAT, false, 5 * 4, 3 * 4);
-        GLES30.glEnableVertexAttribArray(coordHandle);
-
+        GLES30.glEnableVertexAttribArray(texCoordHandle);
         GLES30.glBindVertexArray(0);
-    }
 
-    private void createFBO() {
-        int[] fbos = new int[1];
-        GLES30.glGenFramebuffers(1, fbos, 0);
-        FBO = fbos[0];
-        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, FBO);
-        textureColorBuffer = generateAttachmentTexture();
-        LogUtil.d(TAG, "textureColorBuffer: " + textureColorBuffer);
-        GLES30.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES30.GL_COLOR_ATTACHMENT0, GLES30.GL_TEXTURE_2D, textureColorBuffer, 0);
-
-        int[] rbos = new int[1];
-        GLES30.glGenRenderbuffers(1, rbos, 0);
-        GLES30.glBindRenderbuffer(GLES30.GL_RENDERBUFFER, rbos[0]);
-        GLES30.glRenderbufferStorage(GLES30.GL_RENDERBUFFER, GLES30.GL_DEPTH24_STENCIL8, mScreenWidth, mScreenHeight);
-        GLES30.glBindRenderbuffer(GLES30.GL_RENDERBUFFER, 0);
-        GLES30.glFramebufferRenderbuffer(GLES30.GL_FRAMEBUFFER, GLES30.GL_DEPTH_STENCIL_ATTACHMENT, GLES30.GL_RENDERBUFFER, rbos[0]);
-        if (GLES30.glCheckFramebufferStatus(GLES30.GL_FRAMEBUFFER) != GLES30.GL_FRAMEBUFFER_COMPLETE) {
-            throw new RuntimeException("FrameBuffer is not complete");
-        }
-
-        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
-    }
-
-    private int generateAttachmentTexture() {
-        int[] textures = new int[1];
-        GLES30.glGenTextures(1, textures, 0);
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textures[0]);
-        GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGB, mScreenWidth, mScreenHeight,
-                0, GLES30.GL_RGB, GLES30.GL_UNSIGNED_BYTE, null);
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
-        GLUtil.checkGlError(TAG, "generate attachment texture");
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
-
-        return textures[0];
-    }
-
-    public void setMix(float mix) {
-        this.mix = mix;
-    }
-
-    public void setScreenSize(int w, int h) {
-        mScreenWidth = w;
-        mScreenHeight = h;
-        LogUtil.d(TAG, "w: " + w + ", h: " + h);
+        cubeTexture = GLUtil.bindTexture2D(mContext, R.raw.cube);
+        planeTexture = GLUtil.bindTexture2D(mContext, R.raw.metal);
     }
 }
