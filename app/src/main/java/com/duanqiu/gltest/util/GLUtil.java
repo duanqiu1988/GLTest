@@ -76,4 +76,23 @@ public class GLUtil {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
         return texture;
     }
+
+    public static int bindTexture2D(Context context, @RawRes int resId, int wrapMode) {
+        int[] textures = new int[1];
+        GLES30.glGenTextures(1, textures, 0);
+        int texture = textures[0];
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture);
+
+        // wrap parameter
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, wrapMode);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, wrapMode);
+
+        // filter parameter
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+
+        texImage2D(context.getResources().openRawResource(resId));
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+        return texture;
+    }
 }

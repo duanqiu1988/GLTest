@@ -1,10 +1,12 @@
 package com.duanqiu.gltest.util;
 
+import java.util.Comparator;
+
 /**
  * Created by jjduan on 3/17/17.
  */
 
-public class Vector3 {
+public class Vector3 implements Comparator<Vector3> {
     public float x;
     public float y;
     public float z;
@@ -45,6 +47,17 @@ public class Vector3 {
         return new Vector3(vectorA.y * vectorB.z - vectorA.z * vectorB.y,
                 vectorA.z * vectorB.x - vectorA.x * vectorB.z,
                 vectorA.x * vectorB.y - vectorA.y * vectorB.x);
+    }
+
+    @Override
+    public int compare(Vector3 o1, Vector3 o2) {
+        float result = magnitude(o1) - magnitude(o2);
+        if (result < 0) {
+            return -1;
+        } else if (result > 0) {
+            return 1;
+        }
+        return 0;
     }
 
     @Override
