@@ -32,6 +32,7 @@ public class CameraSurfaceFrameLayout extends FrameLayout {
     protected void onFinishInflate() {
         glSurfaceView = (GLSurfaceView) findViewById(R.id.gl_surface);
         glSurfaceView.setEGLContextClientVersion(3);
+        glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 8); // enable stencil fun
         cameraLayout = (LinearLayout) findViewById(R.id.camera_layout);
         keyboard = (CameraProcessView) findViewById(R.id.keyboard);
         mouseMovement = (CameraProcessView) findViewById(R.id.mouse_movement);

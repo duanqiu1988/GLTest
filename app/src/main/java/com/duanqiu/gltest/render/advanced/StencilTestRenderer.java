@@ -105,6 +105,31 @@ public class StencilTestRenderer extends BaseCameraRenderer {
     }
 
     @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        shader = Shader.createShader(getClass().getSimpleName(), mContext, getVertexShader(), getFragmentShader());
+        singleColorShader = Shader.createShader(getClass().getSimpleName(), mContext, getVertexShader(), R.raw.single_color_frag);
+        super.onSurfaceCreated(gl, config);
+        GLES30.glDepthFunc(GLES30.GL_LESS);
+        GLES30.glEnable(GLES30.GL_STENCIL_TEST);
+        GLES30.glStencilOp(GLES30.GL_KEEP, GLES30.GL_KEEP, GLES30.GL_REPLACE);
+        GLES30.glStencilFunc(GLES30.GL_NOTEQUAL, 1, 0xff);
+    }
+
+    protected int getVertexShader() {
+        return R.raw.depth_test_vert;
+    }
+
+    protected int getFragmentShader() {
+        return R.raw.depth_test_frag;
+    }
+
+    @Override
+    protected void clearBackground() {
+        GLES30.glClearColor(0.2f, 0.3f, 0.3f, 1f);
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT | GLES30.GL_STENCIL_BUFFER_BIT);
+    }
+
+    @Override
     protected void drawFrame(GL10 gl) {
         mCamera.setLookAtM(mVMatrix);
 
@@ -125,12 +150,10 @@ public class StencilTestRenderer extends BaseCameraRenderer {
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6);
         GLES30.glBindVertexArray(0);
 
-
         // 1st.
         // draw cube
-        GLES30.glStencilFunc(GLES30.GL_ALWAYS, 1, 0xff);
         GLES30.glStencilMask(0xff);
-
+        GLES30.glStencilFunc(GLES30.GL_ALWAYS, 1, 0xff);
         GLES30.glBindVertexArray(cubeVAO);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, cubeTexture);
         // first cube
@@ -138,59 +161,37 @@ public class StencilTestRenderer extends BaseCameraRenderer {
         Matrix.translateM(mMMatrix, 0, -1.0f, 0.0f, -1.0f);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
+
         // second cube
         mMMatrix = getUnitMatrix4f();
         Matrix.translateM(mMMatrix, 0, 2.0f, 0.0f, 0.0f);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
-        GLES30.glBindVertexArray(0);
 
 
         // 2nd.
-        GLES30.glStencilFunc(GLES30.GL_NOTEQUAL, 1, 0xff);
-        GLES30.glStencilMask(0x00);
-        GLES30.glDisable(GLES30.GL_DEPTH_TEST);
         singleColorShader.use();
         float scale = 1.1f;
-
-        GLES30.glBindVertexArray(cubeVAO);
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, cubeTexture);
-        // first cube
+        GLES30.glStencilMask(0x00);
+        GLES30.glStencilFunc(GLES30.GL_NOTEQUAL, 1, 0xff);
+        GLES30.glDisable(GLES30.GL_DEPTH_TEST);
         mMMatrix = getUnitMatrix4f();
         Matrix.translateM(mMMatrix, 0, -1.0f, 0.0f, -1.0f);
         Matrix.scaleM(mMMatrix, 0, scale, scale, scale);
         GLES30.glUniformMatrix4fv(singleColorShader.getUniformLocation("model"), 1, false, mMMatrix, 0);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
-        // second cube
+
         mMMatrix = getUnitMatrix4f();
         Matrix.translateM(mMMatrix, 0, 2.0f, 0.0f, 0.0f);
         Matrix.scaleM(mMMatrix, 0, scale, scale, scale);
-        GLES30.glUniformMatrix4fv(singleColorShader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
-        GLES30.glBindVertexArray(0);
 
+        GLES30.glBindVertexArray(0);
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
         GLES30.glStencilMask(0xff);
     }
 
-    @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        shader = Shader.createShader(getClass().getSimpleName(), mContext, getVertexShader(), getFragmentShader());
-        singleColorShader = Shader.createShader(getClass().getSimpleName(), mContext, getVertexShader(), R.raw.single_color_frag);
-        super.onSurfaceCreated(gl, config);
-        GLES30.glDepthFunc(GLES30.GL_LESS);
-        GLES30.glEnable(GLES30.GL_STENCIL_TEST);
-        GLES30.glStencilFunc(GLES30.GL_NOTEQUAL,1, 0xff);
-        GLES30.glStencilOp(GLES30.GL_KEEP,GLES30.GL_KEEP,GLES30.GL_REPLACE);
-    }
-
-    protected int getVertexShader() {
-        return R.raw.depth_test_vert;
-    }
-
-    protected int getFragmentShader() {
-        return R.raw.depth_test_frag;
-    }
 
     @Override
     protected void createVAO() {
