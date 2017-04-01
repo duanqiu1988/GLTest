@@ -131,19 +131,18 @@ public class Blend2Renderer extends BaseCameraRenderer {
         transparentBuffer.put(transparentVertices).position(0);
     }
 
-    protected Comparator<Vector3> mComparator = new Comparator<Vector3>() {
-        @Override
-        public int compare(Vector3 o1, Vector3 o2) {
-            float result = Vector3.magnitude(Vector3.subtraction(o1, mCamera.postion))
-                    - Vector3.magnitude(Vector3.subtraction(o2, mCamera.postion));
-            if (result < 0) {
-                return 1;
-            } else if (result > 0) {
-                return -1;
-            }
-            return 0;
-        }
-    };
+    protected Comparator<Vector3> mComparator =
+            (Vector3 o1, Vector3 o2) -> {
+                float result = Vector3.magnitude(Vector3.subtraction(o1, mCamera.postion))
+                        - Vector3.magnitude(Vector3.subtraction(o2, mCamera.postion));
+                if (result < 0) {
+                    return 1;
+                } else if (result > 0) {
+                    return -1;
+                }
+                return 0;
+
+            };
 
     @Override
     protected void drawFrame(GL10 gl) {
