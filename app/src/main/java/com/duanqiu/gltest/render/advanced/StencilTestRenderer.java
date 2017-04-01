@@ -209,13 +209,11 @@ public class StencilTestRenderer extends BaseCameraRenderer {
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, cubeVertices.length * 4, cubeBuffer, GLES30.GL_STATIC_DRAW);
 
         GLES30.glBindVertexArray(cubeVAO);
-        int positionHandle = shader.getAttribLocation("position");
-        GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
-        int texCoordHandle = shader.getAttribLocation("texCoord");
-        GLES30.glVertexAttribPointer(texCoordHandle, 2, GLES30.GL_FLOAT, false, 5 * 4, 3 * 4);
+        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
+        GLES30.glVertexAttribPointer(1, 2, GLES30.GL_FLOAT, false, 5 * 4, 3 * 4);
 
-        GLES30.glEnableVertexAttribArray(positionHandle);
-        GLES30.glEnableVertexAttribArray(texCoordHandle);
+        GLES30.glEnableVertexAttribArray(0);
+        GLES30.glEnableVertexAttribArray(1);
         GLES30.glBindVertexArray(0);
 
         // bind planeVAO
@@ -226,13 +224,11 @@ public class StencilTestRenderer extends BaseCameraRenderer {
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, planeVertices.length * 4, planeBuffer, GLES30.GL_STATIC_DRAW);
 
         GLES30.glBindVertexArray(planeVAO);
-        positionHandle = shader.getAttribLocation("position");
-        GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
-        texCoordHandle = shader.getAttribLocation("texCoord");
-        GLES30.glVertexAttribPointer(texCoordHandle, 2, GLES30.GL_FLOAT, false, 5 * 4, 3 * 4);
+        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
+        GLES30.glVertexAttribPointer(1, 2, GLES30.GL_FLOAT, false, 5 * 4, 3 * 4);
 
-        GLES30.glEnableVertexAttribArray(positionHandle);
-        GLES30.glEnableVertexAttribArray(texCoordHandle);
+        GLES30.glEnableVertexAttribArray(0);
+        GLES30.glEnableVertexAttribArray(1);
         GLES30.glBindVertexArray(0);
 
         cubeTexture = GLUtil.bindTexture2D(mContext, R.raw.cube);

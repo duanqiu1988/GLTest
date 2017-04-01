@@ -1,8 +1,9 @@
-attribute vec3 position;
-attribute vec3 color;
-attribute vec2 texCoord;
-varying vec2 TexCoord;
-varying vec3 outColor;
+#version 300 es
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec3 color;
+layout (location = 2) in vec2 texCoord;
+out vec2 TexCoord;
+out vec3 outColor;
 
 void main() {
     gl_Position = vec4(position, 1f);

@@ -107,18 +107,18 @@ public class TextureRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, ebos[0]);
         GLES30.glBufferData(GLES30.GL_ELEMENT_ARRAY_BUFFER, indexes.length * 4, indexBuffer, GLES30.GL_STATIC_DRAW);
 
-        int positionHandle = shader.getAttribLocation("position");
-        int colorHandle = shader.getAttribLocation("color");
-        int coordHandle = shader.getAttribLocation("texCoord");
+//        int positionHandle = shader.getAttribLocation("position");
+//        int colorHandle = shader.getAttribLocation("color");
+//        int coordHandle = shader.getAttribLocation("texCoord");
 
-        GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 8 * 4, 0);
-        GLES30.glEnableVertexAttribArray(positionHandle);
+        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 8 * 4, 0);
+        GLES30.glEnableVertexAttribArray(0);
 
-        GLES30.glVertexAttribPointer(colorHandle, 3, GLES30.GL_FLOAT, false, 8 * 4, 3 * 4);
-        GLES30.glEnableVertexAttribArray(colorHandle);
+        GLES30.glVertexAttribPointer(1, 3, GLES30.GL_FLOAT, false, 8 * 4, 3 * 4);
+        GLES30.glEnableVertexAttribArray(1);
 
-        GLES30.glVertexAttribPointer(coordHandle, 2, GLES30.GL_FLOAT, false, 8 * 4, 6 * 4);
-        GLES30.glEnableVertexAttribArray(coordHandle);
+        GLES30.glVertexAttribPointer(2, 2, GLES30.GL_FLOAT, false, 8 * 4, 6 * 4);
+        GLES30.glEnableVertexAttribArray(2);
 
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, 0);
         GLES30.glBindVertexArray(0);

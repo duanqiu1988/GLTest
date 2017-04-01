@@ -30,14 +30,17 @@ public class HelloTriangleRenderer implements GLSurfaceView.Renderer {
     };
 
     private final String vertextShader =
-            "attribute vec3 position; \n" +
+            "#version 300 es\n" +
+                    "layout (location = 0) in vec3 position; \n" +
                     "void main() { \n" +
                     "gl_Position = vec4(position, 1.0); \n" +
                     "}\n";
 
     private final String fragmentShader =
-            "void main() {\n" +
-                    "    gl_FragColor = vec4(1f, 0.5f, 0.2f, 1f);\n" +
+            "#version 300 es\n" +
+                    "out vec4 fragColor;\n" +
+                    "void main() {\n" +
+                    "    fragColor = vec4(1f, 0.5f, 0.2f, 1f);\n" +
                     "}\n";
 
     public HelloTriangleRenderer() {
@@ -83,9 +86,9 @@ public class HelloTriangleRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, buffer);
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, triangle.length * FLOAT_SIZE_BYTES, triangleVertices, GLES30.GL_STATIC_DRAW);
 
-        int positionHandle = shader.getAttribLocation("position");
-        GLES30.glVertexAttribPointer(positionHandle, 3, GLES30.GL_FLOAT, false, 3 * FLOAT_SIZE_BYTES, 0);
-        GLES30.glEnableVertexAttribArray(positionHandle);
+//        int positionHandle = shader.getAttribLocation("position");
+        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 3 * FLOAT_SIZE_BYTES, 0);
+        GLES30.glEnableVertexAttribArray(0);
 
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, 0);
         GLES30.glBindVertexArray(0);
