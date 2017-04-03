@@ -50,7 +50,6 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         prepareVertexBuffer();
-        createVAO();
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
     }
 
@@ -60,6 +59,7 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
         mScreenWidth = width;
         mScreenHeight = height;
         perspectiveM();
+        createVAO();
     }
 
     protected void perspectiveM() {
