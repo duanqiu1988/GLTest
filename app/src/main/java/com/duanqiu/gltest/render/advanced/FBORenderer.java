@@ -23,7 +23,7 @@ import static android.opengl.GLES20.GL_FRAMEBUFFER;
 import static android.opengl.GLES20.glBindFramebuffer;
 import static android.opengl.GLES30.glBindVertexArray;
 
-public class FBORenderer extends BaseCameraRenderer {
+public abstract class FBORenderer extends BaseCameraRenderer {
     public static final String TAG = "FBORenderer";
     protected FloatBuffer cubeBuffer;
     protected FloatBuffer planeBuffer;
@@ -165,7 +165,7 @@ public class FBORenderer extends BaseCameraRenderer {
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
 
-        // draw screen
+//         draw screen
         GLES30.glBindFramebuffer(GL_FRAMEBUFFER, 0);
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
         GLES30.glDisable(GLES30.GL_DEPTH_TEST);
@@ -180,7 +180,7 @@ public class FBORenderer extends BaseCameraRenderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         shader = Shader.createShader(getClass().getSimpleName(), mContext, getVertexShader(), getFragmentShader());
-        screenShader = Shader.createShader(TAG, mContext, R.raw.fbo_screen_vert, R.raw.fbo_screen_frag);
+        screenShader = Shader.createShader(TAG, mContext, R.raw.fbo_screen_vert, getScreenFragmentShader());
         super.onSurfaceCreated(gl, config);
         GLES30.glDepthFunc(GLES30.GL_LESS);
     }
@@ -198,6 +198,8 @@ public class FBORenderer extends BaseCameraRenderer {
     protected int getFragmentShader() {
         return R.raw.depth_test_frag;
     }
+
+    protected abstract int getScreenFragmentShader();
 
     @Override
     protected void createVAO() {
@@ -259,7 +261,7 @@ public class FBORenderer extends BaseCameraRenderer {
 
         glBindVertexArray(0);
 
-        cubeTexture = GLUtil.bindTexture2D(mContext, R.raw.cube);
+        cubeTexture = GLUtil.bindTexture2D(mContext, R.raw.container);
         planeTexture = GLUtil.bindTexture2D(mContext, R.raw.metal);
     }
 
@@ -271,6 +273,13 @@ public class FBORenderer extends BaseCameraRenderer {
         textureColorBuffer = generateAttachmentTexture();
         LogUtil.d(TAG, "textureColorBuffer: " + textureColorBuffer);
         GLES30.glFramebufferTexture2D(GL_FRAMEBUFFER, GLES30.GL_COLOR_ATTACHMENT0, GLES30.GL_TEXTURE_2D, textureColorBuffer, 0);
+
+        int[] rbos = new int[1];
+        GLES30.glGenRenderbuffers(1, rbos, 0);
+        GLES30.glBindRenderbuffer(GLES30.GL_RENDERBUFFER, rbos[0]);
+        GLES30.glRenderbufferStorage(GLES30.GL_RENDERBUFFER, GLES30.GL_DEPTH24_STENCIL8, mScreenWidth, mScreenHeight);
+        GLES30.glBindRenderbuffer(GLES30.GL_RENDERBUFFER, 0);
+        GLES30.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GLES30.GL_DEPTH_STENCIL_ATTACHMENT, GLES30.GL_RENDERBUFFER, rbos[0]);
 
         if (GLES30.glCheckFramebufferStatus(GL_FRAMEBUFFER) != GLES30.GL_FRAMEBUFFER_COMPLETE) {
             throw new RuntimeException("FrameBuffer is not complete");

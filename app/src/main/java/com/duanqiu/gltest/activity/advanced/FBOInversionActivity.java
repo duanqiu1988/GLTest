@@ -3,12 +3,12 @@ package com.duanqiu.gltest.activity.advanced;
 import android.opengl.GLSurfaceView;
 
 import com.duanqiu.gltest.BaseCameraActivity;
-import com.duanqiu.gltest.render.advanced.FBORenderer;
+import com.duanqiu.gltest.render.advanced.FboInversionRenderer;
 
-public class FBOActivity extends BaseCameraActivity {
+public class FBOInversionActivity extends BaseCameraActivity {
 
     @Override
     protected GLSurfaceView.Renderer getRenderer() {
-        return new FBORenderer(this);
+        return new FboInversionRenderer(this);
     }
 }
