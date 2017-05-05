@@ -39,6 +39,7 @@ public class ShaderRenderer implements GLSurfaceView.Renderer {
     };
 
     private final String vertextShader =
+            "precision mediump float;\n" +
             "attribute vec3 position; \n" +
                     "uniform float yOff;\n" +
                     "attribute vec3 color;\n" +
@@ -49,18 +50,21 @@ public class ShaderRenderer implements GLSurfaceView.Renderer {
                     "}\n";
 
     private final String fragmentShader =
+            "precision mediump float;\n" +
             "varying vec3 outColor;\n" +
                     "void main() {\n" +
-                    "    gl_FragColor = vec4(outColor, 1f);\n" +
+                    "    gl_FragColor = vec4(outColor, 1.0);\n" +
                     "}\n";
 
     private final String vertextShader2 =
+            "precision mediump float;\n" +
             "attribute vec3 position; \n" +
                     "void main() { \n" +
                     "    gl_Position = vec4(position, 1.0); \n" +
                     "}\n";
 
     private final String fragmentShader2 =
+            "precision mediump float;\n" +
             "uniform vec4 color;\n" +
                     "void main() {\n" +
                     "    gl_FragColor = color;\n" +

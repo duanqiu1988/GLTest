@@ -25,6 +25,7 @@ public class StencilTestRenderer extends BaseCameraRenderer {
     protected Shader shader;
     protected Shader singleColorShader;
     protected int cubeVAO;
+    protected int colorVAO;
     protected int planeVAO;
     private int cubeTexture;
     private int planeTexture;
@@ -107,7 +108,7 @@ public class StencilTestRenderer extends BaseCameraRenderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         shader = Shader.createShader(getClass().getSimpleName(), mContext, getVertexShader(), getFragmentShader());
-        singleColorShader = Shader.createShader(getClass().getSimpleName(), mContext, getVertexShader(), R.raw.single_color_frag);
+        singleColorShader = Shader.createShader(getClass().getSimpleName(), mContext, R.raw.single_color_vert, R.raw.single_color_frag);
         super.onSurfaceCreated(gl, config);
         GLES30.glDepthFunc(GLES30.GL_LESS);
         GLES30.glEnable(GLES30.GL_STENCIL_TEST);
@@ -175,6 +176,7 @@ public class StencilTestRenderer extends BaseCameraRenderer {
         GLES30.glStencilMask(0x00);
         GLES30.glStencilFunc(GLES30.GL_NOTEQUAL, 1, 0xff);
         GLES30.glDisable(GLES30.GL_DEPTH_TEST);
+        GLES30.glBindVertexArray(colorVAO);
         mMMatrix = getUnitMatrix4f();
         Matrix.translateM(mMMatrix, 0, -1.0f, 0.0f, -1.0f);
         Matrix.scaleM(mMMatrix, 0, scale, scale, scale);
@@ -184,7 +186,7 @@ public class StencilTestRenderer extends BaseCameraRenderer {
         mMMatrix = getUnitMatrix4f();
         Matrix.translateM(mMMatrix, 0, 2.0f, 0.0f, 0.0f);
         Matrix.scaleM(mMMatrix, 0, scale, scale, scale);
-        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+        GLES30.glUniformMatrix4fv(singleColorShader.getUniformLocation("model"), 1, false, mMMatrix, 0);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
 
         GLES30.glBindVertexArray(0);
@@ -195,25 +197,36 @@ public class StencilTestRenderer extends BaseCameraRenderer {
 
     @Override
     protected void createVAO() {
-        int[] vaos = new int[2];
+        int[] vaos = new int[3];
         int[] vbos = new int[2];
 
-        GLES30.glGenVertexArrays(2, vaos, 0);
+        GLES30.glGenVertexArrays(3, vaos, 0);
         GLES30.glGenBuffers(2, vbos, 0);
 
         // bind cubeVAO
         cubeVAO = vaos[0];
         int vbo = vbos[0];
 
+        GLES30.glBindVertexArray(cubeVAO);
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo);
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, cubeVertices.length * 4, cubeBuffer, GLES30.GL_STATIC_DRAW);
 
-        GLES30.glBindVertexArray(cubeVAO);
         GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
         GLES30.glVertexAttribPointer(1, 2, GLES30.GL_FLOAT, false, 5 * 4, 3 * 4);
 
         GLES30.glEnableVertexAttribArray(0);
         GLES30.glEnableVertexAttribArray(1);
+        GLES30.glBindVertexArray(0);
+
+        // bind colorVAO
+        colorVAO = vaos[2];
+        GLES30.glBindVertexArray(colorVAO);
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo);
+        GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, cubeVertices.length * 4, cubeBuffer, GLES30.GL_STATIC_DRAW);
+
+        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 5 * 4, 0);
+
+        GLES30.glEnableVertexAttribArray(0);
         GLES30.glBindVertexArray(0);
 
         // bind planeVAO

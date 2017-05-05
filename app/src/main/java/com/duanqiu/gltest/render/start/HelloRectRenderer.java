@@ -36,14 +36,16 @@ public class HelloRectRenderer implements GLSurfaceView.Renderer {
     };
 
     private final String vertexShader =
+            "precision mediump float;\n" +
             "attribute vec3 position;\n" +
                     "void main() {\n" +
-                    "    gl_Position = vec4(position, 1f);\n" +
+                    "    gl_Position = vec4(position, 1.0);\n" +
                     "}\n";
 
     private final String fragmentShader =
+            "precision mediump float;\n" +
             "void main() {\n" +
-                    "   gl_FragColor = vec4(1f, 0.5f, 0.2f, 1f);\n" +
+                    "   gl_FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n" +
                     "}\n";
 
     public HelloRectRenderer() {

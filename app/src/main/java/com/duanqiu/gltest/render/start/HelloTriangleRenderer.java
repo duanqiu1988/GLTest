@@ -38,9 +38,10 @@ public class HelloTriangleRenderer implements GLSurfaceView.Renderer {
 
     private final String fragmentShader =
             "#version 300 es\n" +
+                    "precision mediump float;\n" +
                     "out vec4 fragColor;\n" +
                     "void main() {\n" +
-                    "    fragColor = vec4(1f, 0.5f, 0.2f, 1f);\n" +
+                    "    fragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n" +
                     "}\n";
 
     public HelloTriangleRenderer() {

@@ -143,7 +143,7 @@ public class CameraRenderer extends BaseCameraRenderer {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture2);
         GLES30.glUniform1i(shader.getUniformLocation("outTexture2"), 1);
 
-        GLES30.glUniform1f(shader.getUniformLocation("mix"), mix);
+        GLES30.glUniform1f(shader.getUniformLocation("_mix"), mix);
 
         long time = SystemClock.uptimeMillis() % 4000L;
 

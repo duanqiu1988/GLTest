@@ -79,7 +79,7 @@ public class CoordinateRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture2);
         GLES30.glUniform1i(shader.getUniformLocation("outTexture2"), 1);
 
-        GLES30.glUniform1f(shader.getUniformLocation("mix"), mix);
+        GLES30.glUniform1f(shader.getUniformLocation("_mix"), mix);
 
         Matrix.setRotateM(mMMatrix, 0, 45, 1, 0, 0);
 

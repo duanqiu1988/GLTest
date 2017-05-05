@@ -1,9 +1,10 @@
 #version 300 es
-uniform sampler2D texture;
+precision mediump float;
+uniform sampler2D _texture;
 in vec2 TexCoord;
 out vec4 fragColor;
 void main() {
-    vec4 texColor = texture(texture, TexCoord);
+    vec4 texColor = texture(_texture, TexCoord);
     if (texColor.a < 0.1) {
         discard;
     }

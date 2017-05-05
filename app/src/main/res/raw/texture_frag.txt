@@ -1,10 +1,11 @@
 #version 300 es
+precision mediump float;
 in vec2 TexCoord;
 in vec3 outColor;
 uniform sampler2D outTexture;
 uniform sampler2D outTexture2;
-uniform float mix;
+uniform float _mix;
 out vec4 fragColor;
 void main() {
-    fragColor = mix(texture(outTexture, TexCoord), texture(outTexture2, TexCoord), mix) * vec4(outColor, 1);
-    }
+    fragColor = mix(texture(outTexture, TexCoord), texture(outTexture2, TexCoord), _mix) * vec4(outColor, 1.0);
+}
