@@ -193,7 +193,7 @@ public class MultiLightRenderer extends BaseLightingRenderer {
             float[] mMMatrix = getUnitMatrix4f();
             Matrix.translateM(mMMatrix, 0, pointLights[i].position.x, pointLights[i].position.y, pointLights[i].position.z);
             Matrix.scaleM(mMMatrix, 0, 0.2f, 0.2f, 0.2f);
-            GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+            GLES30.glUniformMatrix4fv(lambShader.getUniformLocation("model"), 1, false, mMMatrix, 0);
             GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
         }
         GLES30.glBindVertexArray(0);

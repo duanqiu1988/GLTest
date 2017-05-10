@@ -88,6 +88,7 @@ public class Shader {
         GLES30.glDeleteShader(vertexShader);
         GLES30.glDeleteShader(fragmentShader);
 
+        LogUtil.i(tag, "create program: " + program);
         return program;
     }
 

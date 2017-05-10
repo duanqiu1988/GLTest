@@ -100,7 +100,7 @@ public abstract class BaseLightingRenderer extends BaseCameraRenderer {
         float[] mMMatrix = getUnitMatrix4f();
         Matrix.translateM(mMMatrix, 0, lightPos.x, lightPos.y, lightPos.z);
         Matrix.scaleM(mMMatrix, 0, 0.2f, 0.2f, 0.2f);
-        GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
+        GLES30.glUniformMatrix4fv(lambShader.getUniformLocation("model"), 1, false, mMMatrix, 0);
 
         GLES30.glBindVertexArray(lambVAO);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);

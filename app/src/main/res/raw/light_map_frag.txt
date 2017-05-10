@@ -1,3 +1,4 @@
+precision mediump float;
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
@@ -11,7 +12,7 @@ struct Light {
     vec3 specular;
 };
 
-precision mediump float;
+
 varying vec3 Normal;
 varying vec3 FragPos;
 varying vec2 TexCoord;
