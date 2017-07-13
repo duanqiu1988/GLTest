@@ -25,12 +25,7 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
     protected long lastFrame = 0;
     protected float deltaTime = 0.0f;
 
-    public static final float[] unitMatrix4f = {
-            1f, 0f, 0f, 0f,
-            0f, 1f, 0f, 0f,
-            0f, 0f, 1f, 0f,
-            0f, 0f, 0f, 1f
-    };
+    protected float[] mModelMatrix = new float[16];
 
     public BaseCameraRenderer(Context context) {
         mContext = context;
@@ -43,8 +38,9 @@ public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Came
 
     protected abstract void prepareVertexBuffer();
 
-    public float[] getUnitMatrix4f() {
-        return unitMatrix4f.clone();
+    public float[] getIdentityM() {
+        Matrix.setIdentityM(mModelMatrix, 0);
+        return mModelMatrix;
     }
 
     @Override

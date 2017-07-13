@@ -12,11 +12,11 @@ public class Camera {
     public static final float YAW = -90.0f;
     public static final float PITCH = 0f;
     public static final float SPEED = 3.0f;
-    public static final float SENSITIVTY = 0.001f;
+    public static final float SENSITIVITY = 0.001f;
     public static final float ZOOM = 45.0f;
 
     // Camera Attribute
-    public Vector3 postion;
+    public Vector3 position;
     public Vector3 front;
     public Vector3 up;
     public Vector3 right;
@@ -26,23 +26,23 @@ public class Camera {
     public float pitch;
     // Camera options
     public float movementSpeed = SPEED;
-    public float movementSensitivty = SENSITIVTY;
+    public float movementSensitivity = SENSITIVITY;
     public float zoom = ZOOM;
 
     public Camera() {
         this(new Vector3(0f, 0f, 0f));
     }
 
-    public Camera(Vector3 postion) {
-        this(postion, new Vector3(0f, 1f, 0f));
+    public Camera(Vector3 position) {
+        this(position, new Vector3(0f, 1f, 0f));
     }
 
-    public Camera(Vector3 postion, Vector3 worldUp) {
-        this(postion, worldUp, YAW, PITCH);
+    public Camera(Vector3 position, Vector3 worldUp) {
+        this(position, worldUp, YAW, PITCH);
     }
 
-    public Camera(Vector3 postion, Vector3 worldUp, float yaw, float pitch) {
-        this.postion = postion;
+    public Camera(Vector3 position, Vector3 worldUp, float yaw, float pitch) {
+        this.position = position;
         this.worldUp = worldUp;
         this.yaw = yaw;
         this.pitch = pitch;
@@ -50,9 +50,9 @@ public class Camera {
     }
 
     public void setLookAtM(float[] viewMatrix) {
-        Vector3 center = Vector3.addition(postion, front);
+        Vector3 center = Vector3.addition(position, front);
         Matrix.setLookAtM(viewMatrix, 0,
-                postion.x, postion.y, postion.z  // camera position
+                position.x, position.y, position.z  // camera position
                 , center.x, center.y, center.z,  // camera target
                 up.x, up.y, up.z);  // camera up
     }
@@ -60,33 +60,33 @@ public class Camera {
     public void processKeyboard(CameraMovement direction, float deltaTime) {
         float velocity = deltaTime * movementSpeed;
         if (direction == CameraMovement.FORWARD) {
-            postion.addition(Vector3.scale(front, velocity));
+            position.addition(Vector3.scale(front, velocity));
         }
 
         if (direction == CameraMovement.BACKWARD) {
-            postion.subtraction(Vector3.scale(front, velocity));
+            position.subtraction(Vector3.scale(front, velocity));
         }
 
         if (direction == CameraMovement.LEFT) {
-            postion.subtraction(Vector3.scale(right, velocity));
+            position.subtraction(Vector3.scale(right, velocity));
         }
 
         if (direction == CameraMovement.RIGHT) {
-            postion.addition(Vector3.scale(right, velocity));
+            position.addition(Vector3.scale(right, velocity));
         }
 
         if (direction == CameraMovement.UP) {
-            postion.addition(Vector3.scale(up, velocity));
+            position.addition(Vector3.scale(up, velocity));
         }
 
         if (direction == CameraMovement.DOWN) {
-            postion.subtraction(Vector3.scale(up, velocity));
+            position.subtraction(Vector3.scale(up, velocity));
         }
     }
 
     public void processMouseMovement(float xOff, float yOff, boolean constrainPitch) {
-        xOff *= movementSensitivty;
-        yOff *= movementSensitivty;
+        xOff *= movementSensitivity;
+        yOff *= movementSensitivity;
         yaw += xOff;
         pitch += yOff;
         if (constrainPitch) {
@@ -128,7 +128,7 @@ public class Camera {
 
     @Override
     public String toString() {
-        return "postion" + postion + ", front" + front + ", up" + up + ", yaw(" + yaw + "), pitch(" + pitch + ")";
+        return "position" + position + ", front" + front + ", up" + up + ", yaw(" + yaw + "), pitch(" + pitch + ")";
     }
 
     public enum CameraMovement {

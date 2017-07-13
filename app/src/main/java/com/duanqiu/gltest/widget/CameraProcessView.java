@@ -33,7 +33,7 @@ public class CameraProcessView extends TextView {
     private int count = 0;
     private Drawable bgDrawable = new ColorDrawable(Color.parseColor("#22000000"));
     Paint paint;
-    private Runnable presseRunnable = new Runnable() {
+    private Runnable pressRunnable = new Runnable() {
         @Override
         public void run() {
             if (pressArea != NONE) {
@@ -175,7 +175,7 @@ public class CameraProcessView extends TextView {
             case MotionEvent.ACTION_DOWN:
                 pressArea = getPressArea(event);
                 LogUtil.d(getClass().getSimpleName(), String.valueOf(pressArea));
-                post(presseRunnable);
+                post(pressRunnable);
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:

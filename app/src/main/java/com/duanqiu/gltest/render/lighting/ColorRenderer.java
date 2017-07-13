@@ -86,7 +86,7 @@ public class ColorRenderer extends BaseLightingRenderer {
         mCamera.setLookAtM(mVMatrix);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("view"), 1, false, mVMatrix, 0);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
-        float[] mMMatrix = getUnitMatrix4f();
+        float[] mMMatrix = getIdentityM();
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
 
         GLES30.glBindVertexArray(VAO);

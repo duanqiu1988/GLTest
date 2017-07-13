@@ -94,7 +94,7 @@ public class MultiLightRenderer extends BaseLightingRenderer {
         pointLights[3] = new PointLight(pointLightColors[3].scale(0.1f), pointLightColors[3], pointLightColors[3],
                 pointLightPosition[3], 1.0f, 0.09f, 0.32f);
         spotLight = new SpotLight(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.8f, 0.8f, 0.0f), new Vector3(0.8f, 0.8f, 0.0f),
-                mCamera.postion, mCamera.front, 1.0f, 0.09f, 0.32f,
+                mCamera.position, mCamera.front, 1.0f, 0.09f, 0.32f,
                 (float) Math.cos(Math.toRadians(12.5f)), (float) Math.cos(Math.toRadians(13.0f)));
     }
 
@@ -119,7 +119,7 @@ public class MultiLightRenderer extends BaseLightingRenderer {
         shader.use();
 
         // viewPos
-        GLES30.glUniform3f(shader.getUniformLocation("viewPos"), mCamera.postion.x, mCamera.postion.y, mCamera.postion.z);
+        GLES30.glUniform3f(shader.getUniformLocation("viewPos"), mCamera.position.x, mCamera.position.y, mCamera.position.z);
 
         // Directional Light
         GLES30.glUniform3f(shader.getUniformLocation("dirLight.ambient"), dirLight.ambient.x, dirLight.ambient.y, dirLight.ambient.z);
@@ -170,7 +170,7 @@ public class MultiLightRenderer extends BaseLightingRenderer {
 
         GLES30.glBindVertexArray(VAO);
         for (int i = 0; i < 10; i++) {
-            float[] mMMatrix = getUnitMatrix4f();
+            float[] mMMatrix = getIdentityM();
 
             float angle = i * 20;
             Matrix.setRotateM(mMMatrix, 0, angle, 1.0f, 0.3f, 0.5f);
@@ -190,7 +190,7 @@ public class MultiLightRenderer extends BaseLightingRenderer {
         GLES30.glBindVertexArray(lambVAO);
 
         for (int i = 0; i < 4;i++){
-            float[] mMMatrix = getUnitMatrix4f();
+            float[] mMMatrix = getIdentityM();
             Matrix.translateM(mMMatrix, 0, pointLights[i].position.x, pointLights[i].position.y, pointLights[i].position.z);
             Matrix.scaleM(mMMatrix, 0, 0.2f, 0.2f, 0.2f);
             GLES30.glUniformMatrix4fv(lambShader.getUniformLocation("model"), 1, false, mMMatrix, 0);

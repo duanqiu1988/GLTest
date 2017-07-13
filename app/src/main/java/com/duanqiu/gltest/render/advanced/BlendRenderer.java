@@ -140,12 +140,12 @@ public class BlendRenderer extends BaseCameraRenderer {
         GLES30.glBindVertexArray(cubeVAO);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, cubeTexture);
         // first cube
-        float[] mMMatrix = getUnitMatrix4f();
+        float[] mMMatrix = getIdentityM();
         Matrix.translateM(mMMatrix, 0, -1.0f, 0.0f, -1.0f);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
         // second cube
-        mMMatrix = getUnitMatrix4f();
+        mMMatrix = getIdentityM();
         Matrix.translateM(mMMatrix, 0, 2.0f, 0.0f, 0.0f);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
@@ -153,7 +153,7 @@ public class BlendRenderer extends BaseCameraRenderer {
         // draw plane
         GLES30.glBindVertexArray(planeVAO);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, planeTexture);
-        mMMatrix = getUnitMatrix4f();
+        mMMatrix = getIdentityM();
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6);
 
@@ -161,7 +161,7 @@ public class BlendRenderer extends BaseCameraRenderer {
         GLES30.glBindVertexArray(transparentVAO);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, transparentTexture);
         for (int i = 0; i < transparentPositions.length; i++) {
-            mMMatrix = getUnitMatrix4f();
+            mMMatrix = getIdentityM();
             Vector3 position = transparentPositions[i];
             Matrix.translateM(mMMatrix, 0, position.x, position.y, position.z);
             GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);

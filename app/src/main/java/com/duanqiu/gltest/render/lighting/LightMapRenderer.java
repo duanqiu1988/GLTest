@@ -83,7 +83,7 @@ public class LightMapRenderer extends BaseLightingRenderer {
         // draw VAO
         shader.use();
         GLES30.glUniform3f(shader.getUniformLocation("light.position"), lightPos.x, lightPos.y, lightPos.z);
-        GLES30.glUniform3f(shader.getUniformLocation("viewPos"), mCamera.postion.x, mCamera.postion.y, mCamera.postion.z);
+        GLES30.glUniform3f(shader.getUniformLocation("viewPos"), mCamera.position.x, mCamera.position.y, mCamera.position.z);
 
         GLES30.glUniform3f(shader.getUniformLocation("light.ambient"), 0.2f, 0.2f, 0.2f);
         GLES30.glUniform3f(shader.getUniformLocation("light.diffuse"), 0.5f, 0.5f, 0.5f);
@@ -101,7 +101,7 @@ public class LightMapRenderer extends BaseLightingRenderer {
         mCamera.setLookAtM(mVMatrix);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("view"), 1, false, mVMatrix, 0);
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
-        float[] mMMatrix = getUnitMatrix4f();
+        float[] mMMatrix = getIdentityM();
         GLES30.glUniformMatrix4fv(shader.getUniformLocation("model"), 1, false, mMMatrix, 0);
 
         GLES30.glBindVertexArray(VAO);

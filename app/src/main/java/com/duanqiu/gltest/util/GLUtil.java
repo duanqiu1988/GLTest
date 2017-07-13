@@ -12,12 +12,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * Created by 俊杰 on 2017/3/14.
  */
 
 public class GLUtil {
+    public static final String TAG = GLUtil.class.getSimpleName();
+
     public static void checkGlError(String tag, String op) {
         int error;
         while ((error = GLES30.glGetError()) != GLES30.GL_NO_ERROR) {
@@ -42,7 +45,7 @@ public class GLUtil {
         return builder.toString();
     }
 
-    public static void texImage2D(InputStream inputStream) {
+    public static void texImage2D(int type, InputStream inputStream) {
         Bitmap bm;
         try {
             bm = BitmapFactory.decodeStream(inputStream);
@@ -54,7 +57,7 @@ public class GLUtil {
             }
         }
 
-        GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, bm, 0);
+        GLUtils.texImage2D(type, 0, bm, 0);
         bm.recycle();
     }
 
@@ -72,8 +75,28 @@ public class GLUtil {
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
 
-        texImage2D(context.getResources().openRawResource(resId));
+        texImage2D(GLES30.GL_TEXTURE_2D, context.getResources().openRawResource(resId));
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
+        return texture;
+    }
+
+    public static int bindCubeTexture(Context context, List<Integer> resIds) {
+        int[] textures = new int[1];
+        GLES30.glGenTextures(1, textures, 0);
+        int texture = textures[0];
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_CUBE_MAP, texture);
+
+        int size = resIds.size();
+        for (int i = 0; i < size; i++) {
+            texImage2D(GLES30.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, context.getResources().openRawResource(resIds.get(i)));
+        }
+
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_CUBE_MAP, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_CUBE_MAP, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_CUBE_MAP, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_CUBE_MAP, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_CUBE_MAP, GLES30.GL_TEXTURE_WRAP_R, GLES30.GL_CLAMP_TO_EDGE);
+
         return texture;
     }
 
@@ -91,7 +114,7 @@ public class GLUtil {
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
 
-        texImage2D(context.getResources().openRawResource(resId));
+        texImage2D(GLES30.GL_TEXTURE_2D, context.getResources().openRawResource(resId));
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
         return texture;
     }
