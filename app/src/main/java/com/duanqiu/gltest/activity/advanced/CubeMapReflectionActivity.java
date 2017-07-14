@@ -4,9 +4,9 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
 import com.duanqiu.gltest.BaseCameraActivity;
-import com.duanqiu.gltest.render.advanced.CubeMapRenderer;
+import com.duanqiu.gltest.render.advanced.CubeMapReflectionRenderer;
 
-public class CubeMapActivity extends BaseCameraActivity {
+public class CubeMapReflectionActivity extends BaseCameraActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,6 +15,6 @@ public class CubeMapActivity extends BaseCameraActivity {
 
     @Override
     protected GLSurfaceView.Renderer getRenderer() {
-        return new CubeMapRenderer(this);
+        return new CubeMapReflectionRenderer(this);
     }
 }

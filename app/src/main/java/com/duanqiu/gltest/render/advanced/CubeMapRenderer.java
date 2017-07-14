@@ -20,7 +20,7 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by duanjunjie on 17-7-13.
  */
 
-public class CubeMapRenderer extends BaseCameraRenderer {
+public abstract class CubeMapRenderer extends BaseCameraRenderer {
     private static final String TAG = CubeMapRenderer.class.getSimpleName();
     private FloatBuffer cubeBuffer;
     private FloatBuffer skyBoxBuffer;
@@ -138,11 +138,15 @@ public class CubeMapRenderer extends BaseCameraRenderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        cubeShader = Shader.createShader(getClass().getSimpleName(), mContext, R.raw.cube_map_vert, R.raw.cube_map_frag);
+        cubeShader = Shader.createShader(getClass().getSimpleName(), mContext, getCubeVertexShader(), getCubeFragmentShader());
         skyBoxShader = Shader.createShader(getClass().getSimpleName(), mContext, R.raw.sky_box_vert, R.raw.sky_box_frag);
         super.onSurfaceCreated(gl, config);
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
     }
+
+    protected abstract int getCubeVertexShader();
+
+    protected abstract int getCubeFragmentShader();
 
     @Override
     protected void clearBackground() {
