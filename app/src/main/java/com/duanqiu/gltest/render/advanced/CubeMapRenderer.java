@@ -2,14 +2,11 @@ package com.duanqiu.gltest.render.advanced;
 
 import android.content.Context;
 import android.opengl.GLES30;
-import android.util.Log;
 
 import com.duanqiu.gltest.R;
 import com.duanqiu.gltest.render.BaseCameraRenderer;
-import com.duanqiu.gltest.util.Camera;
 import com.duanqiu.gltest.util.GLUtil;
 import com.duanqiu.gltest.util.Shader;
-import com.duanqiu.gltest.util.Vector3;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -129,11 +126,6 @@ public class CubeMapRenderer extends BaseCameraRenderer {
     }
 
     @Override
-    protected void initCamera() {
-        mCamera = new Camera(new Vector3(0, 0, 0));
-    }
-
-    @Override
     protected void prepareVertexBuffer() {
         cubeBuffer = ByteBuffer.allocateDirect(cubeVertices.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -148,7 +140,6 @@ public class CubeMapRenderer extends BaseCameraRenderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         cubeShader = Shader.createShader(getClass().getSimpleName(), mContext, R.raw.depth_test_vert, R.raw.depth_test_frag);
         skyBoxShader = Shader.createShader(getClass().getSimpleName(), mContext, R.raw.sky_box_vert, R.raw.sky_box_frag);
-        Log.d(TAG, "cube shader " + cubeShader + ", sky box shader " + skyBoxShader);
         super.onSurfaceCreated(gl, config);
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
     }
@@ -176,18 +167,19 @@ public class CubeMapRenderer extends BaseCameraRenderer {
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
 
         // draw skyBox
-        GLES30.glDepthFunc(GLES30.GL_EQUAL);
+        GLES30.glDepthMask(false);
         skyBoxShader.use();
         GLES30.glBindVertexArray(skyBoxVAO);
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
         GLES30.glBindTexture(GLES30.GL_TEXTURE_CUBE_MAP, skyBoxTexture);
         GLES30.glUniform1i(skyBoxShader.getUniformLocation("skybox"), 0);
-        GLES30.glUniformMatrix4fv(skyBoxShader.getUniformLocation("view"), 1, false, mVMatrix, 0);
+
+        GLES30.glUniformMatrix4fv(skyBoxShader.getUniformLocation("view"), 1, false, GLUtil.mat4(GLUtil.mat3(mVMatrix)), 0);
         GLES30.glUniformMatrix4fv(skyBoxShader.getUniformLocation("projection"), 1, false, mProjMatrix, 0);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 36);
 
         GLES30.glBindVertexArray(0);
-        GLES30.glDepthFunc(GLES30.GL_LESS);
+        GLES30.glDepthMask(true);
     }
 
     @Override

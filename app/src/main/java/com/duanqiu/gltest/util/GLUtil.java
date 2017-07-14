@@ -118,4 +118,40 @@ public class GLUtil {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0);
         return texture;
     }
+
+    private static float[] tempMat3 = new float[9];
+    private static float[] tempMat4 = new float[16];
+
+    public static float[] mat3(float[] mat4) {
+        tempMat3[0] = mat4[0];
+        tempMat3[1] = mat4[1];
+        tempMat3[2] = mat4[2];
+        tempMat3[3] = mat4[4];
+        tempMat3[4] = mat4[5];
+        tempMat3[5] = mat4[6];
+        tempMat3[6] = mat4[8];
+        tempMat3[7] = mat4[9];
+        tempMat3[8] = mat4[10];
+        return tempMat3;
+    }
+
+    public static float[] mat4(float[] mat3) {
+        tempMat4[0] = mat3[0];
+        tempMat4[1] = mat3[1];
+        tempMat4[2] = mat3[2];
+        tempMat4[3] = 0;
+        tempMat4[4] = mat3[3];
+        tempMat4[5] = mat3[4];
+        tempMat4[6] = mat3[5];
+        tempMat4[7] = 0;
+        tempMat4[8] = mat3[6];
+        tempMat4[9] = mat3[7];
+        tempMat4[10] = mat3[8];
+        tempMat4[11] = 0;
+        tempMat4[12] = 0;
+        tempMat4[13] = 0;
+        tempMat4[14] = 0;
+        tempMat4[15] = 0;
+        return tempMat4;
+    }
 }
