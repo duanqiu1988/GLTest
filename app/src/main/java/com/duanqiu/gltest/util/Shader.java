@@ -39,6 +39,10 @@ public class Shader {
         GLUtil.checkGlError(tag, "glUseProgram");
     }
 
+    public int getProgram() {
+        return program;
+    }
+
     private int loadShader(int shaderType, String shaderSource) {
         int shader = GLES30.glCreateShader(shaderType);
         if (shader != 0) {
@@ -108,5 +112,9 @@ public class Shader {
         }
 
         return handle;
+    }
+
+    public void setMat4(String uniform, float[] mat4) {
+        GLES30.glUniformMatrix4fv(getUniformLocation(uniform), 1, false, mat4, 0);
     }
 }

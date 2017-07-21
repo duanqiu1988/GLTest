@@ -14,6 +14,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public abstract class BaseCameraRenderer implements GLSurfaceView.Renderer, Camera.CameraProcessListener {
     public static final String TAG = "BaseCameraRenderer";
+    protected static final int MATRIX4_SIZE = 16 * 4;
     protected Context mContext;
     protected float[] mProjMatrix = new float[16];
     protected float[] mVMatrix = new float[16];
