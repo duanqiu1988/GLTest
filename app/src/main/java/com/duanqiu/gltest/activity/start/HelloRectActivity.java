@@ -9,6 +9,6 @@ public class HelloRectActivity extends BaseActivity {
 
     @Override
     protected GLSurfaceView.Renderer getRenderer() {
-        return new HelloRectRenderer();
+        return new HelloRectRenderer(this);
     }
 }

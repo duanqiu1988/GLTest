@@ -1,8 +1,10 @@
 package com.duanqiu.gltest.render.start;
 
+import android.content.Context;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 
+import com.duanqiu.gltest.R;
 import com.duanqiu.gltest.util.Shader;
 
 import java.nio.ByteBuffer;
@@ -23,6 +25,7 @@ public class HelloRectRenderer implements GLSurfaceView.Renderer {
     private int VAO;
     private FloatBuffer vertexBuffer;
     private IntBuffer indexBuffer;
+    private Context mContext;
     private final float[] vertexes = {
             0.5f, 0.5f, 0f,
             0.5f, -0.5f, 0f,
@@ -37,18 +40,19 @@ public class HelloRectRenderer implements GLSurfaceView.Renderer {
 
     private final String vertexShader =
             "precision mediump float;\n" +
-            "attribute vec3 position;\n" +
+                    "attribute vec3 position;\n" +
                     "void main() {\n" +
                     "    gl_Position = vec4(position, 1.0);\n" +
                     "}\n";
 
     private final String fragmentShader =
             "precision mediump float;\n" +
-            "void main() {\n" +
+                    "void main() {\n" +
                     "   gl_FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n" +
                     "}\n";
 
-    public HelloRectRenderer() {
+    public HelloRectRenderer(Context context) {
+        mContext = context;
         vertexBuffer = ByteBuffer.allocateDirect(vertexes.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         vertexBuffer.put(vertexes).position(0);
@@ -60,7 +64,7 @@ public class HelloRectRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        shader = Shader.createShader(TAG, vertexShader, fragmentShader);
+        shader = Shader.createShader(TAG, mContext, R.raw.hello_rect_vert, R.raw.hello_rect_frag);
 
         createVAO();
     }
