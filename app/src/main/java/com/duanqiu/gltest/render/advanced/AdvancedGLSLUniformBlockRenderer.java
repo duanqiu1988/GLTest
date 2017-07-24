@@ -152,6 +152,7 @@ public class AdvancedGLSLUniformBlockRenderer extends BaseCameraRenderer {
 
         cubeVAO = vaos[0];
         int vbo = vbos[0];
+        GLES30.glBindVertexArray(cubeVAO);
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo);
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, cubeVertices.length * 4, cubeBuffer, GLES30.GL_STATIC_DRAW);
         GLES30.glEnableVertexAttribArray(0);
