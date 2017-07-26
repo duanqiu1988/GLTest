@@ -34,9 +34,10 @@ public class Shader {
         return new Shader(tag, vertexShaderSource, fragmentShaderSource);
     }
 
-    public void use() {
+    public Shader use() {
         GLES30.glUseProgram(program);
         GLUtil.checkGlError(tag, "glUseProgram");
+        return this;
     }
 
     public int getProgram() {
@@ -116,5 +117,9 @@ public class Shader {
 
     public void setMat4(String uniform, float[] mat4) {
         GLES30.glUniformMatrix4fv(getUniformLocation(uniform), 1, false, mat4, 0);
+    }
+
+    public void setVec3(String uniform, float[] vec3) {
+        GLES30.glUniform3fv(getUniformLocation(uniform), 1, vec3, 0);
     }
 }

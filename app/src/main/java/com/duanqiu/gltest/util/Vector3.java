@@ -103,6 +103,14 @@ public class Vector3 implements Comparator<Vector3> {
         return this;
     }
 
+    public float[] floatValue() {
+        float[] floats = new float[3];
+        floats[0] = x;
+        floats[1] = y;
+        floats[2] = z;
+        return floats;
+    }
+
     public static float magnitude(Vector3 vector) {
         return (float) Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2) + Math.pow(vector.z, 2));
     }

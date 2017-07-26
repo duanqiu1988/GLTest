@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.duanqiu.gltest.game.GamePlayer xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/game_player"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.duanqiu.gltest.activity.game.GameActivity">
+
+    <android.opengl.GLSurfaceView
+        android:id="@+id/gl_surface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="hello"
+        android:textColor="@android:color/white" />
+
+</com.duanqiu.gltest.game.GamePlayer>

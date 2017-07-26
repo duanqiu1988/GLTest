@@ -11,6 +11,9 @@
         <item
             android:id="@+id/advanced"
             android:title="advanced" />
+        <item
+            android:id="@+id/game"
+            android:title="game" />
     </group>
 
 </menu>
