@@ -3,7 +3,6 @@ package com.duanqiu.gltest.game;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
 
-import com.duanqiu.gltest.util.LogUtil;
 import com.duanqiu.gltest.util.Shader;
 import com.duanqiu.gltest.util.Vector2;
 import com.duanqiu.gltest.util.Vector3;
@@ -17,6 +16,7 @@ import java.nio.FloatBuffer;
  */
 
 public class SpriteRenderer {
+    public static final String TAG = SpriteRenderer.class.getSimpleName();
     private Shader shader;
     private int quadVAO;
     private float[] modelMatrix4 = new float[16];
@@ -30,13 +30,15 @@ public class SpriteRenderer {
         // Prepare transformations
         shader.use();
 
-        LogUtil.d("render", "program " + shader.getProgram() + " texture " + texture + " vao " + quadVAO);
         Matrix.setIdentityM(modelMatrix4, 0);
-        Matrix.scaleM(modelMatrix4, 0, size.x, size.y, 1);
-        Matrix.translateM(modelMatrix4, 0, -0.5f * size.x, -0.5f * size.y, 0.0f);
+        float x = 2 * position.x - 1;
+        float y = 2 * (1 - position.y) - 1 - 2 * size.y;
+
+        Matrix.translateM(modelMatrix4, 0, x, y, 0);
+        Matrix.scaleM(modelMatrix4, 0, 2 * size.x, 2 * size.y, 1);
+        Matrix.translateM(modelMatrix4, 0, 0.5f, 0.5f, 0);
         Matrix.rotateM(modelMatrix4, 0, rotate, 0, 0, 1);
-        Matrix.translateM(modelMatrix4, 0, 0.5f * size.x, 0.5f * size.y, 0.0f);
-        Matrix.translateM(modelMatrix4, 0, position.x, position.y, 0);
+        Matrix.translateM(modelMatrix4, 0, -0.5f, -0.5f, 0);
 
         shader.setMat4("model", modelMatrix4);
 
@@ -44,7 +46,6 @@ public class SpriteRenderer {
         shader.setVec3("spriteColor", color.floatValue());
 
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture);
-
         GLES30.glBindVertexArray(quadVAO);
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6);
         GLES30.glBindVertexArray(0);
