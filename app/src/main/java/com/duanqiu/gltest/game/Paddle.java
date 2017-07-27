@@ -30,7 +30,7 @@ public class Paddle extends GameObject {
     }
 
     public void checkCollision(Ball ball) {
-        if (GameUtil.collid(this, ball)) {
+        if (GameUtil.collide(this, ball)) {
             ball.velocity.y *= -1;
         }
     }

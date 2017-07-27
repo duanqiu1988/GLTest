@@ -87,9 +87,18 @@ public class GameLevel {
         }
     }
 
+    public void checkCollision(Ball ball) {
+        blocks.stream().filter(block -> !block.destroyed && GameUtil.collide(block, ball)).forEach(block -> {
+            ball.velocity.y *= -1;
+            if (!block.isSolid) {
+                block.destroyed = true;
+            }
+        });
+    }
+
     public void draw(SpriteRenderer renderer) {
-        for (Block block : blocks) {
+        blocks.stream().filter(block -> !block.destroyed).forEach(block -> {
             block.draw(renderer);
-        }
+        });
     }
 }

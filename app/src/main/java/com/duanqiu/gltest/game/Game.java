@@ -33,6 +33,7 @@ public class Game {
     private float paddleVelocityX = 0.0005f;
     // level
     private List<GameLevel> levels;
+    private GameLevel currentLevel;
     private int level;
     // ball
     private Ball ball;
@@ -61,7 +62,8 @@ public class Game {
         levels.add(new GameLevel(context, R.raw.level_2));
         levels.add(new GameLevel(context, R.raw.level_3));
         levels.add(new GameLevel(context, R.raw.level_4));
-        level = 0;
+        level = 1;
+        currentLevel = levels.get(level);
         mState = State.PAUSE;
     }
 
@@ -85,6 +87,7 @@ public class Game {
             ball.move(dt);
         }
         paddle.checkCollision(ball);
+        currentLevel.checkCollision(ball);
     }
 
     public void onTap() {
@@ -100,7 +103,7 @@ public class Game {
         // draw background
         renderer.drawSprite(texBackground, positionBackground, sizeBackground, 0, colorBackground);
         // draw blocks
-        levels.get(level).draw(renderer);
+        currentLevel.draw(renderer);
         // draw ball
         ball.draw(renderer);
         // draw paddle

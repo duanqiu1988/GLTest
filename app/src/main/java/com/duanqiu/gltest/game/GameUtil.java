@@ -5,7 +5,7 @@ package com.duanqiu.gltest.game;
  */
 
 public class GameUtil {
-    public static boolean collid(GameObject o1, GameObject o2) {
+    public static boolean collide(GameObject o1, GameObject o2) {
         if (aInb(o1.position.x, o2.position.x, o2.position.x + o2.size.x)
                 || aInb(o2.position.x, o1.position.x, o1.position.x + o1.size.x)) {
             if (aInb(o1.position.y, o2.position.y, o2.position.y + o2.size.y)
