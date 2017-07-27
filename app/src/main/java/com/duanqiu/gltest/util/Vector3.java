@@ -17,6 +17,12 @@ public class Vector3 implements Comparator<Vector3> {
         z = 0;
     }
 
+    public Vector3(float v) {
+        this.x = v;
+        this.y = v;
+        this.z = v;
+    }
+
     public Vector3(float x, float y, float z) {
         this.x = x;
         this.y = y;

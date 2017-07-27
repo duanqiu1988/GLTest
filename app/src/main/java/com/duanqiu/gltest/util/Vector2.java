@@ -15,6 +15,11 @@ public class Vector2 implements Comparator<Vector2> {
         y = 0;
     }
 
+    public Vector2(float v) {
+        this.x = v;
+        this.y = v;
+    }
+
     public Vector2(float x, float y) {
         this.x = x;
         this.y = y;

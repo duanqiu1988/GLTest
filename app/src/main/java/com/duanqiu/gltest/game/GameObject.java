@@ -18,13 +18,13 @@ public class GameObject {
 
     public GameObject(Vector2 pos, Vector2 size, int sprite, Vector3 color, Vector2 velocity) {
         if (pos == null) {
-            this.position = new Vector2(0, 0);
+            this.position = new Vector2(0);
         } else {
             this.position = pos;
         }
 
         if (size == null) {
-            this.size = new Vector2(1, 1);
+            this.size = new Vector2(1);
         } else {
             this.size = size;
         }
@@ -32,13 +32,13 @@ public class GameObject {
         this.sprite = sprite;
 
         if (color == null) {
-            this.color = new Vector3(1, 1, 1);
+            this.color = new Vector3(1);
         } else {
             this.color = color;
         }
 
         if (velocity == null) {
-            this.velocity = new Vector2(0, 0);
+            this.velocity = new Vector2(0);
         } else {
             this.velocity = velocity;
         }

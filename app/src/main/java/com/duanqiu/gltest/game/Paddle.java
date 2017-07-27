@@ -28,4 +28,10 @@ public class Paddle extends GameObject {
             position.x = 0;
         }
     }
+
+    public void checkCollision(Ball ball) {
+        if (GameUtil.collid(this, ball)) {
+            ball.velocity.y *= -1;
+        }
+    }
 }
