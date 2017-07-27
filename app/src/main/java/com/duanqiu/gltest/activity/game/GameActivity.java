@@ -1,14 +1,12 @@
 package com.duanqiu.gltest.activity.game;
 
 import android.app.Activity;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 
 import com.duanqiu.gltest.R;
 import com.duanqiu.gltest.game.Game;
 import com.duanqiu.gltest.game.GamePlayer;
-import com.duanqiu.gltest.util.LogUtil;
 
 public class GameActivity extends Activity {
     public static final String TAG = GameActivity.class.getSimpleName();
@@ -42,9 +40,6 @@ public class GameActivity extends Activity {
         game = new Game();
         player = (GamePlayer) findViewById(R.id.game_player);
         player.setGame(game);
-        Point point = new Point();
-        getWindowManager().getDefaultDisplay().getSize(point);
-        LogUtil.d(TAG, "x "+ point.x+" y "+point.y);
     }
 
     @Override

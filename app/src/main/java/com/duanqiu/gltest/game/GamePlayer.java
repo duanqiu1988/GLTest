@@ -5,7 +5,6 @@ import android.opengl.GLSurfaceView;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
@@ -30,11 +29,17 @@ public class GamePlayer extends FrameLayout implements GLSurfaceView.Renderer {
         this.gestureAdapter = new OnGestureAdapter() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                Log.d(TAG, "distanceX " + distanceX + ", distanceY " + distanceY);
+//                Log.d(TAG, "distanceX " + distanceX + ", distanceY " + distanceY);
                 if (mGame != null) {
                     mGame.movePaddle(Math.abs(distanceX), distanceX < 0);
                 }
                 return super.onScroll(e1, e2, distanceX, distanceY);
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                mGame.onTap();
+                return super.onSingleTapUp(e);
             }
         };
     }
@@ -82,7 +87,7 @@ public class GamePlayer extends FrameLayout implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        mGame.update();
+        mGame.update(1);
         mGame.draw();
     }
 }
