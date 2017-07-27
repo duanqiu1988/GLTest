@@ -8,16 +8,13 @@ import com.duanqiu.gltest.util.Vector3;
  */
 
 public class GameObject {
-
-    Vector2 position;
-    Vector2 size;
-    Vector2 velocity;
-    Vector3 color;
-    float rotation;
-    boolean isSolid;
-    boolean destroyed;
+    protected Vector2 position;
+    protected Vector2 size;
+    protected Vector2 velocity;
+    protected Vector3 color;
+    protected float rotation;
     // Render state
-    int sprite;
+    protected int sprite;
 
     public GameObject(Vector2 pos, Vector2 size, int sprite, Vector3 color, Vector2 velocity) {
         if (pos == null) {
