@@ -9,6 +9,7 @@ import java.util.Comparator;
 public class Vector2 implements Comparator<Vector2> {
     public float x;
     public float y;
+    private float[] floats = new float[2];
 
     public Vector2() {
         x = 0;
@@ -71,6 +72,12 @@ public class Vector2 implements Comparator<Vector2> {
         return this;
     }
 
+    public Vector2 addition(float offset) {
+        x += offset;
+        y += offset;
+        return this;
+    }
+
     public Vector2 subtraction(Vector2 vectorB) {
         x -= vectorB.x;
         y -= vectorB.y;
@@ -81,6 +88,12 @@ public class Vector2 implements Comparator<Vector2> {
     public Vector2 scale(float scale) {
         x *= scale;
         y *= scale;
+        return this;
+    }
+
+    public Vector2 wrap(Vector2 a) {
+        x = a.x;
+        y = a.y;
         return this;
     }
 
@@ -98,6 +111,12 @@ public class Vector2 implements Comparator<Vector2> {
         }
 
         return vector;
+    }
+
+    public float[] floatValue() {
+        floats[0] = x;
+        floats[1] = y;
+        return floats;
     }
 
     @Override

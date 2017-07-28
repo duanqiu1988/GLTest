@@ -1,6 +1,7 @@
 package com.duanqiu.gltest.game;
 
 import android.content.Context;
+import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -78,6 +79,7 @@ public class GamePlayer extends FrameLayout implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         mGame.init(getContext());
+        GLES30.glEnable(GLES30.GL_BLEND);
     }
 
     @Override

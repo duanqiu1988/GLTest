@@ -10,6 +10,7 @@ public class Vector3 implements Comparator<Vector3> {
     public float x;
     public float y;
     public float z;
+    private float[] floats = new float[3];
 
     public Vector3() {
         x = 0;
@@ -110,7 +111,6 @@ public class Vector3 implements Comparator<Vector3> {
     }
 
     public float[] floatValue() {
-        float[] floats = new float[3];
         floats[0] = x;
         floats[1] = y;
         floats[2] = z;

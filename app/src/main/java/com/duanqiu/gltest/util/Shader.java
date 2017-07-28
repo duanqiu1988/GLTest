@@ -119,7 +119,15 @@ public class Shader {
         GLES30.glUniformMatrix4fv(getUniformLocation(uniform), 1, false, mat4, 0);
     }
 
+    public void setVec4(String uniform, float[] vec4) {
+        GLES30.glUniform4fv(getUniformLocation(uniform), 1, vec4, 0);
+    }
+
     public void setVec3(String uniform, float[] vec3) {
         GLES30.glUniform3fv(getUniformLocation(uniform), 1, vec3, 0);
+    }
+
+    public void setVec2(String uniform, float[] vec2) {
+        GLES30.glUniform2fv(getUniformLocation(uniform), 1, vec2, 0);
     }
 }

@@ -41,6 +41,11 @@ public class Game {
     private float ballRadius = 0.03f;
     private float ballVelocityX = 0.007f;
     private float ballVelocityY = 0.017f;
+    // particle
+    private ParticleGenerator particleGenerator;
+    private Shader particleShader;
+    private int texParticle;
+    private Vector2 particleOffSet = new Vector2(ballRadius / 2);
 
     public void init(Context context) {
         shader = Shader.createShader("block", context, R.raw.sprite_vert, R.raw.sprite_frag);
@@ -49,6 +54,7 @@ public class Game {
         texBackground = GLUtil.bindTexture2D(context, R.raw.background);
         texPaddle = GLUtil.bindTexture2D(context, R.raw.paddle);
         texBall = GLUtil.bindTexture2D(context, R.raw.awesomeface);
+        texParticle = GLUtil.bindTexture2D(context, R.raw.particle);
 
         paddle = new Paddle(new Vector2(0.0f, 1 - paddleH), new Vector2(paddleW, paddleH),
                 texPaddle, new Vector3(1), new Vector2(paddleVelocityX, 0));
@@ -57,12 +63,15 @@ public class Game {
         sizeBackground = new Vector2(1);
         colorBackground = new Vector3(1);
 
+        particleShader = Shader.createShader("particle", context, R.raw.particle_vert, R.raw.particle_frag);
+
+
         levels = new ArrayList<>();
         levels.add(new GameLevel(context, R.raw.level_1));
         levels.add(new GameLevel(context, R.raw.level_2));
         levels.add(new GameLevel(context, R.raw.level_3));
         levels.add(new GameLevel(context, R.raw.level_4));
-        level = 1;
+        level = 0;
         currentLevel = levels.get(level);
         mState = State.PAUSE;
     }
@@ -72,6 +81,8 @@ public class Game {
         float r = (float) width / height;
         ball = new Ball(new Vector2(0.5f, 1 - paddleH - 2 * ballRadius), new Vector2(ballRadius * 2 / r, ballRadius * 2),
                 texBall, new Vector3(1), new Vector2(ballVelocityX, ballVelocityY));
+        particleGenerator = new ParticleGenerator(particleShader, texParticle,
+                500, new Vector2(ballRadius / r, ballRadius));
     }
 
     public void movePaddle(float offset, boolean right) {
@@ -88,6 +99,7 @@ public class Game {
         }
         paddle.checkCollision(ball);
         currentLevel.checkCollision(ball);
+        particleGenerator.update(dt, ball);
     }
 
     public void onTap() {
@@ -106,6 +118,8 @@ public class Game {
         currentLevel.draw(renderer);
         // draw ball
         ball.draw(renderer);
+        // draw particles
+        particleGenerator.draw();
         // draw paddle
         paddle.draw(renderer);
     }

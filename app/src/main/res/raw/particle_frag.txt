@@ -1,0 +1,10 @@
+#version 300 es
+precision mediump float;
+in vec2 TexCoords;
+in vec4 ParticleColor;
+uniform sampler2D sprite;
+out vec4 fragColor;
+
+void main() {
+    fragColor = (texture(sprite, TexCoords) * ParticleColor);
+}
