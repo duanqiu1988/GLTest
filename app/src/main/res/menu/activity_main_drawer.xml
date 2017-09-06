@@ -9,6 +9,9 @@
             android:id="@+id/lighting"
             android:title="lighting" />
         <item
+            android:id="@+id/model"
+            android:title="model" />
+        <item
             android:id="@+id/advanced"
             android:title="advanced" />
         <item
