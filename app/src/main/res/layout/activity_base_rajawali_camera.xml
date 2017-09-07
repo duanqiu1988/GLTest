@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.duanqiu.gltest.widget.RajawaliCameraSurfaceFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:textureview="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/camera_surface_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.rajawali3d.surface.RajawaliTextureView
+        android:id="@+id/rajawali_surface"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        textureview:bitsAlpha="8"
+        textureview:bitsBlue="8"
+        textureview:bitsGreen="8"
+        textureview:bitsRed="8"
+        textureview:frameRate="60.0"
+        textureview:renderMode="RENDER_WHEN_DIRTY" />
+
+    <LinearLayout
+        android:id="@+id/camera_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#22000000"
+        android:orientation="horizontal">
+
+        <com.duanqiu.gltest.widget.CameraProcessView
+            android:id="@+id/keyboard"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Keyboard"
+            android:textColor="@android:color/white" />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
+
+        <com.duanqiu.gltest.widget.CameraProcessView
+            android:id="@+id/mouse_movement"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="MouseMovement"
+            android:textColor="@android:color/white" />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
+
+        <com.duanqiu.gltest.widget.CameraProcessView
+            android:id="@+id/mouse_scroll"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="MouseScroll"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+</com.duanqiu.gltest.widget.RajawaliCameraSurfaceFrameLayout>
